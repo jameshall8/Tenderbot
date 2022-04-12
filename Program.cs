@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using ScrapySharp.Extensions;
 using ScrapySharp.Network;
+using System.Text.RegularExpressions;
+
+
 
 namespace TenderBotGit
 {
@@ -47,13 +50,20 @@ namespace TenderBotGit
                 
 
                 if (checkIfNew(page_ID)){
-                 pageDetails.Title = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
-                 pageDetails.Link = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
-                 pageDetails.Description = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
-                 pageDetails.PublishedDate = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
-                 pageDetails.Deadline = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
-                 pageDetails.Closing = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
-                 pageDetails.Location = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
+
+
+                 pageDetails.Title = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
+                 pageDetails.PublishedDate = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//div[@class='govuk-summary-list__row']/dd[@class='govuk-summary-list__value']").InnerText);
+                 pageDetails.Deadline = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dl[@class='govuk-summary-list app-govuk-summary-list app-govuk-summary-list--top-border govuk-!-margin-bottom-8']/div[@class='govuk-summary-list__row'][2]/dd[@class='govuk-summary-list__value'][1]").InnerText);
+                 pageDetails.Link = "https://www.digitalmarketplace.service.gov.uk" + url;
+                 pageDetails.Description = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dl[@class='govuk-summary-list app-govuk-summary-list app-govuk-summary-list--top-border govuk-!-margin-bottom-8'][2]/div[@class='govuk-summary-list__row'][2]").InnerText, "Summary of the work").Trim();
+                 pageDetails.Closing = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dl[@class='govuk-summary-list app-govuk-summary-list app-govuk-summary-list--top-border govuk-!-margin-bottom-8']/div[@class='govuk-summary-list__row'][3]/dd[@class='govuk-summary-list__value'][1]").InnerText);
+                 pageDetails.Location = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dl[@class='govuk-summary-list app-govuk-summary-list app-govuk-summary-list--top-border govuk-!-margin-bottom-8'][2]/div[@class='govuk-summary-list__row'][5]").InnerText, "Location");
+
+                
+
+                 var test = pageDetails.Closing;
+
 
 
 
@@ -67,6 +77,21 @@ namespace TenderBotGit
 
     static bool checkIfNew(string pageID){
         return true;
+    }
+
+    static string formatData(string input, string wordToRemove){
+        // input = Regex.Replace(input, @"[ \t]+(\r?$)", string.Empty);
+        input = input.Trim();
+        input = input.Replace(wordToRemove, "");
+
+        return input;
+    }
+
+    static string formatData(string input){
+        // input = Regex.Replace(input, @"[ \t]+(\r?$)", string.Empty);
+        input = input.Trim();
+
+        return input;
     }
     static HtmlNode GetHtml(string URL){
         WebPage webPage = _scrapingBrowser.NavigateToPage(new Uri(URL));
