@@ -3687,11 +3687,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/macbook/Documents/TenderBotGit/TenderBotGit.csproj",
+      "projectUniqueName": "/Users/macbook/Documents/TenderBotGit/tenderbot/TenderBotGit.csproj",
       "projectName": "TenderBotGit",
-      "projectPath": "/Users/macbook/Documents/TenderBotGit/TenderBotGit.csproj",
+      "projectPath": "/Users/macbook/Documents/TenderBotGit/tenderbot/TenderBotGit.csproj",
       "packagesPath": "/Users/macbook/.nuget/packages/",
-      "outputPath": "/Users/macbook/Documents/TenderBotGit/obj/",
+      "outputPath": "/Users/macbook/Documents/TenderBotGit/tenderbot/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/macbook/.nuget/NuGet/NuGet.Config"

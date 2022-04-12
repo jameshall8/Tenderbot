@@ -31,6 +31,7 @@ namespace TenderBotGit
                     pageLinks.Add(link.Attributes["href"].Value);
                 }
             }
+            pageLinks.RemoveRange(0, Math.Min(3, pageLinks.Count));
             return pageLinks;
         }
 
@@ -41,13 +42,32 @@ namespace TenderBotGit
                 var HtmlNode = GetHtml("https://www.digitalmarketplace.service.gov.uk" + url);
                 var pageDetails = new Details();
 
-                pageDetails.Title = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//html/head/title").InnerText;
-                var description = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//html/body/dd").InnerText;
+                string page_ID = url.Substring(url.Length - 5);
+
+                
+
+                if (checkIfNew(page_ID)){
+                 pageDetails.Title = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
+                 pageDetails.Link = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
+                 pageDetails.Description = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
+                 pageDetails.PublishedDate = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
+                 pageDetails.Deadline = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
+                 pageDetails.Closing = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
+                 pageDetails.Location = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerHtml;
+
+
+
+                }
+
 
             }
             return lstpageDetails;
 
         }
+
+    static bool checkIfNew(string pageID){
+        return true;
+    }
     static HtmlNode GetHtml(string URL){
         WebPage webPage = _scrapingBrowser.NavigateToPage(new Uri(URL));
         return webPage.Html;

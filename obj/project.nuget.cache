@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "InxVOZjm33lF3cub5h0NSY41nip/XsH6XwaeN0ZBNAD+wIVzscz5Wa1+mQEjs775eBADTfoNv671SaU5FlZYkg==",
+  "dgSpecHash": "gBmK71wl1hQ5WHk0BEX+/2VA9YR+4+Ftz0EOlE/3bw2K84CrTQeki7xnXHwkeWXRobBxpVcLOhjz96Pe9iovIQ==",
   "success": true,
-  "projectFilePath": "/Users/macbook/Documents/TenderBotGit/TenderBotGit.csproj",
+  "projectFilePath": "/Users/macbook/Documents/TenderBotGit/tenderbot/TenderBotGit.csproj",
   "expectedPackageFiles": [
     "/Users/macbook/.nuget/packages/csvhelper/27.2.1/csvhelper.27.2.1.nupkg.sha512",
     "/Users/macbook/.nuget/packages/fsharp.core/4.5.2/fsharp.core.4.5.2.nupkg.sha512",
