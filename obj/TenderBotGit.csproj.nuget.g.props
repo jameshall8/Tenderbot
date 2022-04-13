@@ -17,5 +17,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgNewtonsoft_Json Condition=" '$(PkgNewtonsoft_Json)' == '' ">/Users/macbook/.nuget/packages/newtonsoft.json/10.0.3</PkgNewtonsoft_Json>
+    <PkgAzurite Condition=" '$(PkgAzurite)' == '' ">/Users/macbook/.nuget/packages/azurite/2.6.5</PkgAzurite>
   </PropertyGroup>
 </Project>

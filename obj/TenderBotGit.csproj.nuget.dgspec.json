@@ -38,6 +38,10 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "Azure.Storage.Blobs": {
+              "target": "Package",
+              "version": "[12.11.0, )"
+            },
             "CsvHelper": {
               "target": "Package",
               "version": "[27.2.1, )"
@@ -53,6 +57,14 @@
             "SlackAPI": {
               "target": "Package",
               "version": "[1.1.13, )"
+            },
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.8.3, )"
+            },
+            "azurite": {
+              "target": "Package",
+              "version": "[2.6.5, )"
             }
           },
           "imports": [
