@@ -8,6 +8,10 @@ using ScrapySharp.Extensions;
 using ScrapySharp.Network;
 using System.Text.RegularExpressions;
 using Slack.Webhooks;
+using System.Data.SqlClient;
+using Azure.Storage.Blobs;
+
+
 
 
 
@@ -21,6 +25,13 @@ namespace TenderBotGit
         static void Main(string[] args)
         {
 
+
+            checkIfNew("17200");
+            checkIfNew("50000");
+
+
+
+
             //getting the individual links of the pages 
             var links = GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?q=&statusOpenClosed=open");
 
@@ -31,7 +42,7 @@ namespace TenderBotGit
 
             //loop through all the objects and send each to slack via web hook
             foreach (Details detail in Details){
-               sendToSlack(detail);
+            //    sendToSlack(detail);
 
             }
 
@@ -147,29 +158,36 @@ namespace TenderBotGit
 
             
 
-            slackClient.Post(slackMessage);
+            // slackClient.Post(slackMessage);
 
 
     }
 
     static bool checkIfNew(string pageID){
-        return true;
+
+    
+
+    
+    String connString = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;";
+    using (SqlConnection connection = new SqlConnection(connString))
+    {
+                        SqlCommand checkID= new SqlCommand("SELECT COUNT(*) FROM Tenders WHERE (ID = @ID)" , connection);
+                        checkID.Parameters.AddWithValue("@ID", pageID);
+                        int UserExist = (int)checkID.ExecuteScalar();
+
+                        if(UserExist > 0)
+                        {
+                        return false;
+                        }
+                        else
+                        {
+                        return true;
+                        }
+
+                }
     }
 
-    static string formatData(string input, string wordToRemove){
-        // input = Regex.Replace(input, @"[ \t]+(\r?$)", string.Empty);
-        input = input.Trim();
-        input = input.Replace(wordToRemove, "");
-
-        return input;
-    }
-
-    static string formatData(string input){
-        // input = Regex.Replace(input, @"[ \t]+(\r?$)", string.Empty);
-        input = input.Trim();
-
-        return input;
-    }
+    
     static HtmlNode GetHtml(string URL){
         WebPage webPage = _scrapingBrowser.NavigateToPage(new Uri(URL));
         return webPage.Html;
