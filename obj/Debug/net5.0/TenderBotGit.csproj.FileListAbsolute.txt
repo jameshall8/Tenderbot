@@ -80,3 +80,6 @@
 /Users/macbook/Documents/TenderBotGit/tenderbot/obj/Debug/net5.0/ref/TenderBotGit.dll
 /Users/macbook/Documents/TenderBotGit/tenderbot/obj/Debug/net5.0/TenderBotGit.pdb
 /Users/macbook/Documents/TenderBotGit/tenderbot/obj/Debug/net5.0/TenderBotGit.genruntimeconfig.cache
+/Users/macbook/Documents/TenderBotGit/tenderbot/bin/Debug/net5.0/Newtonsoft.Json.dll
+/Users/macbook/Documents/TenderBotGit/tenderbot/bin/Debug/net5.0/SlackAPI.dll
+/Users/macbook/Documents/TenderBotGit/tenderbot/bin/Debug/net5.0/Slack.Webhooks.dll
