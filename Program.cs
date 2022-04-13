@@ -7,6 +7,7 @@ using System.Globalization;
 using ScrapySharp.Extensions;
 using ScrapySharp.Network;
 using System.Text.RegularExpressions;
+using Slack.Webhooks;
 
 
 
@@ -20,8 +21,21 @@ namespace TenderBotGit
         static void Main(string[] args)
         {
 
+            //getting the individual links of the pages 
             var links = GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?q=&statusOpenClosed=open");
-            GetPageDetails(links);
+
+
+            //returns a list of Details objects 
+            var Details = GetPageDetails(links);
+
+
+            //loop through all the objects and send each to slack via web hook
+            foreach (Details detail in Details){
+               sendToSlack(detail);
+
+            }
+
+
         }
 
         static List<string> GetPageLinks(string url){
@@ -39,31 +53,32 @@ namespace TenderBotGit
         }
 
         static List<Details> GetPageDetails(List<string> urls){
-            var lstpageDetails = new List<Details>();
+            var listpageDetails = new List<Details>();
 
             foreach (var url in urls){
                 var HtmlNode = GetHtml("https://www.digitalmarketplace.service.gov.uk" + url);
                 var pageDetails = new Details();
 
-                string page_ID = url.Substring(url.Length - 5);
+                pageDetails.ID = url.Substring(url.Length - 5);
 
                 
 
-                if (checkIfNew(page_ID)){
+                if (checkIfNew(pageDetails.ID)){
 
 
                  pageDetails.Title = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
-                 pageDetails.PublishedDate = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//div[@class='govuk-summary-list__row']/dd[@class='govuk-summary-list__value']").InnerText);
-                 pageDetails.Deadline = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dl[@class='govuk-summary-list app-govuk-summary-list app-govuk-summary-list--top-border govuk-!-margin-bottom-8']/div[@class='govuk-summary-list__row'][2]/dd[@class='govuk-summary-list__value'][1]").InnerText);
+                 pageDetails.Department = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
+
+                 pageDetails.PublishedDate = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
+                 pageDetails.Deadline = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
                  pageDetails.Link = "https://www.digitalmarketplace.service.gov.uk" + url;
-                 pageDetails.Description = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dl[@class='govuk-summary-list app-govuk-summary-list app-govuk-summary-list--top-border govuk-!-margin-bottom-8'][2]/div[@class='govuk-summary-list__row'][2]").InnerText, "Summary of the work").Trim();
-                 pageDetails.Closing = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dl[@class='govuk-summary-list app-govuk-summary-list app-govuk-summary-list--top-border govuk-!-margin-bottom-8']/div[@class='govuk-summary-list__row'][3]/dd[@class='govuk-summary-list__value'][1]").InnerText);
-                 pageDetails.Location = formatData(HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dl[@class='govuk-summary-list app-govuk-summary-list app-govuk-summary-list--top-border govuk-!-margin-bottom-8'][2]/div[@class='govuk-summary-list__row'][5]").InnerText, "Location");
+                 pageDetails.Description = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Summary')]/following-sibling::dd").InnerText;
+                 pageDetails.Closing = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Closing')]/following-sibling::dd").InnerText;
+                 pageDetails.Location = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
+                 
 
-                
-
-                 var test = pageDetails.Closing;
-
+                 
+                 listpageDetails.Add(pageDetails);
 
 
 
@@ -71,9 +86,71 @@ namespace TenderBotGit
 
 
             }
-            return lstpageDetails;
+            return listpageDetails;
 
         }
+
+    static void sendToSlack(Details details){
+            var slackClient = new SlackClient("https://hooks.slack.com/services/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");
+            
+            var slackMessage = new SlackMessage
+            {
+                        Channel = "#leads-tenders",
+                        Text = "New Tender Opportunity Posted",
+                        IconEmoji = Emoji.RobotFace,
+                        Username = "TenderBot"
+
+                        
+            };
+
+                    var slackAttachment = new SlackAttachment
+            {
+                Fallback = "New open task [Urgent]: <"+details.Link + "|" + details.Title + ">",
+                Text = "<"+details.Link + "|" + details.Title + ">",
+                Color = "#D00000",
+                Fields =
+                    new List<SlackField>
+                        {
+                            new SlackField
+                                {
+                                    Title = "Department",
+                                    Value = details.Department,
+                                },
+                            new SlackField
+                                {
+                                    Title = "Description",
+                                    Value = details.Description,
+                                },
+                                new SlackField
+                                {
+                                    Title = "Published Date",
+                                    Value = details.PublishedDate,
+                                },
+                                new SlackField
+                                {
+                                    Title = "Deadline For Asking Questions",
+                                    Value = details.Deadline,
+                                },
+                                new SlackField
+                                {
+                                    Title = "Closing Date ",
+                                    Value = details.Closing,
+                                },
+                                new SlackField
+                                {
+                                    Title = "Location ",
+                                    Value = details.Location,
+                                }
+                        }
+            };
+        slackMessage.Attachments = new List<SlackAttachment> {slackAttachment};
+
+            
+
+            slackClient.Post(slackMessage);
+
+
+    }
 
     static bool checkIfNew(string pageID){
         return true;
@@ -103,6 +180,10 @@ namespace TenderBotGit
 }
         public class Details{
             public string Title { get; set; }
+
+            public string ID { get; set; }
+
+            public string Department { get; set; }
             
             public string Link { get; set; }
 
