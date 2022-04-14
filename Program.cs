@@ -1,16 +1,12 @@
 ﻿using System;
-using CsvHelper;
 using HtmlAgilityPack;
-using System.IO;
 using System.Collections.Generic;
-using System.Globalization;
 using ScrapySharp.Extensions;
 using ScrapySharp.Network;
-using System.Text.RegularExpressions;
 using Slack.Webhooks;
 using System.Data.SqlClient;
-using Azure.Storage.Blobs;
-
+using Azure.Data.Tables;
+using Azure;
 
 
 
@@ -24,16 +20,13 @@ namespace TenderBotGit
 
         static void Main(string[] args)
         {
+            runProgram();
+                        
+        }
 
-
-            checkIfNew("17200");
-            checkIfNew("50000");
-
-
-
-
-            //getting the individual links of the pages 
-            var links = GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?q=&statusOpenClosed=open");
+        static void runProgram(){
+                //getting the individual links of the pages 
+            var links = GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?statusOpenClosed=open&lot=digital-outcomes");
 
 
             //returns a list of Details objects 
@@ -42,11 +35,9 @@ namespace TenderBotGit
 
             //loop through all the objects and send each to slack via web hook
             foreach (Details detail in Details){
-            //    sendToSlack(detail);
+               sendToSlack(detail);
 
             }
-
-
         }
 
         static List<string> GetPageLinks(string url){
@@ -59,7 +50,7 @@ namespace TenderBotGit
                     pageLinks.Add(link.Attributes["href"].Value);
                 }
             }
-            pageLinks.RemoveRange(0, Math.Min(3, pageLinks.Count));
+            pageLinks.RemoveRange(0, Math.Min(4, pageLinks.Count));
             return pageLinks;
         }
 
@@ -72,6 +63,8 @@ namespace TenderBotGit
 
                 pageDetails.ID = url.Substring(url.Length - 5);
 
+                var test = pageDetails.ID;
+
                 
 
                 if (checkIfNew(pageDetails.ID)){
@@ -79,7 +72,30 @@ namespace TenderBotGit
 
                  pageDetails.Title = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
                  pageDetails.Department = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
+                 
+                 try {
+                     pageDetails.Budget = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Budget')]/following-sibling::dd").InnerText;
+                     if (pageDetails.Budget == ""){
+                         pageDetails.Budget = "Did not specify budget";
+                     }
+                     pageDetails.BudgetOrDayRate = true;
 
+                 }
+                catch{
+                    try {
+                      pageDetails.Budget = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Maximum day')]/following-sibling::dd").InnerText;
+                      pageDetails.BudgetOrDayRate = false;
+                      if (pageDetails.Budget == ""){
+                         pageDetails.Budget = "Did not specify budget";
+                     }
+                    }
+                    catch {
+                        pageDetails.Budget = "Budget unavailable for this tender";
+                        pageDetails.BudgetOrDayRate = true;
+
+
+                    }
+                }
                  pageDetails.PublishedDate = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
                  pageDetails.Deadline = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
                  pageDetails.Link = "https://www.digitalmarketplace.service.gov.uk" + url;
@@ -88,11 +104,14 @@ namespace TenderBotGit
                  pageDetails.Location = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
                  
 
-                 
+                 addToDB(pageDetails);
                  listpageDetails.Add(pageDetails);
 
 
 
+                }
+                else {
+                    break;
                 }
 
 
@@ -100,6 +119,16 @@ namespace TenderBotGit
             return listpageDetails;
 
         }
+
+    static String checkIfDayRate(bool check){
+        if (check){
+            return "Budget Range";
+        }
+        else {
+            return "Maximum Day Rate";
+        }
+
+    }
 
     static void sendToSlack(Details details){
             var slackClient = new SlackClient("https://hooks.slack.com/services/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");
@@ -109,85 +138,122 @@ namespace TenderBotGit
                         Channel = "#leads-tenders",
                         Text = "New Tender Opportunity Posted",
                         IconEmoji = Emoji.RobotFace,
-                        Username = "TenderBot"
+                        Username = "TenderBot",
+                        
 
                         
             };
-
                     var slackAttachment = new SlackAttachment
             {
-                Fallback = "New open task [Urgent]: <"+details.Link + "|" + details.Title + ">",
-                Text = "<"+details.Link + "|" + details.Title + ">",
-                Color = "#D00000",
+
+
+                
+                Fallback = details.Title,
+                Color = "#0b0c0c",
+                AuthorName = details.Department,
+                AuthorLink = "//www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities",
+                Title = details.Title,
+                TitleLink = details.Link,
+                Text = details.Description,
+
                 Fields =
                     new List<SlackField>
                         {
-                            new SlackField
-                                {
-                                    Title = "Department",
-                                    Value = details.Department,
-                                },
-                            new SlackField
-                                {
-                                    Title = "Description",
-                                    Value = details.Description,
-                                },
                                 new SlackField
                                 {
-                                    Title = "Published Date",
-                                    Value = details.PublishedDate,
+                                    
+                                    Title = checkIfDayRate(details.BudgetOrDayRate),
+                                    Value = details.Budget,
                                 },
-                                new SlackField
-                                {
-                                    Title = "Deadline For Asking Questions",
-                                    Value = details.Deadline,
-                                },
+                                // new SlackField
+                                // {
+                                //     Title = "Published Date",
+                                //     Value = details.PublishedDate,
+                                //     Short = true
+
+                                // },
+                                // new SlackField
+                                // {
+                                //     Title = "Deadline For Asking Questions",
+                                //     Value = details.Deadline,
+                                //     Short = true
+
+                                // },
                                 new SlackField
                                 {
                                     Title = "Closing Date ",
                                     Value = details.Closing,
+                                    Short = true
+
                                 },
                                 new SlackField
                                 {
                                     Title = "Location ",
                                     Value = details.Location,
+                                    Short = true
+
                                 }
-                        }
+                        },
+
+
+                        ThumbUrl = details.Link,
+
+
+                        
             };
         slackMessage.Attachments = new List<SlackAttachment> {slackAttachment};
 
+        slackClient.Post(slackMessage);
+
+
+    }
+
+
+    static void addToDB(Details details){
+            TableClient client = new TableClient("AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;", "Tenders");
+
             
+            
+            var entity = new TableEntity("Tenders", details.ID)
+        {
+            { "ID", details.ID },
+            { "Title", details.Title },
+            { "Department", details.Department },
+            { "Link", details.Link },
+            { "Description", details.Description },
+            { "PublishedDate", details.PublishedDate },
+            { "Deadline", details.Deadline },
+            { "Closing", details.Closing },
+            { "Location", details.Location }
+        };
 
-            // slackClient.Post(slackMessage);
+
+        client.AddEntity(entity);
 
 
     }
-
     static bool checkIfNew(string pageID){
+        
 
-    
+                
 
-    
-    String connString = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;";
-    using (SqlConnection connection = new SqlConnection(connString))
-    {
-                        SqlCommand checkID= new SqlCommand("SELECT COUNT(*) FROM Tenders WHERE (ID = @ID)" , connection);
-                        checkID.Parameters.AddWithValue("@ID", pageID);
-                        int UserExist = (int)checkID.ExecuteScalar();
+    TableClient client = new TableClient("AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;", "Tenders");
 
-                        if(UserExist > 0)
-                        {
-                        return false;
-                        }
-                        else
-                        {
-                        return true;
-                        }
+    Pageable<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{pageID}'");
 
-                }
+    int counter = 0;
+
+    foreach (TableEntity entity in entities)
+{
+    counter = counter + 1;
+    if (counter > 0){
+        return false;
+    }
+}
+
+    return true;
     }
 
-    
     static HtmlNode GetHtml(string URL){
         WebPage webPage = _scrapingBrowser.NavigateToPage(new Uri(URL));
         return webPage.Html;
@@ -198,6 +264,10 @@ namespace TenderBotGit
 }
         public class Details{
             public string Title { get; set; }
+
+            public bool BudgetOrDayRate { get; set; } //false == day rate 
+
+            public string Budget { get; set; }
 
             public string ID { get; set; }
 
