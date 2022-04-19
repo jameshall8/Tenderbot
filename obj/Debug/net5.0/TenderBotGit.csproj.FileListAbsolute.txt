@@ -106,3 +106,6 @@
 /Users/macbook/Documents/TenderBotGit/tenderbot/bin/Debug/net5.0/TenderBotGit
 /Users/macbook/Documents/TenderBotGit/tenderbot/bin/Debug/net5.0/Azure.Data.Tables.dll
 /Users/macbook/Documents/TenderBotGit/tenderbot/obj/Debug/net5.0/refint/TenderBotGit.dll
+/Users/macbook/Documents/TenderBotGit/tenderbot/bin/Debug/net5.0/Microsoft.Azure.Management.ContainerRegistry.dll
+/Users/macbook/Documents/TenderBotGit/tenderbot/bin/Debug/net5.0/Microsoft.Rest.ClientRuntime.dll
+/Users/macbook/Documents/TenderBotGit/tenderbot/bin/Debug/net5.0/Microsoft.Rest.ClientRuntime.Azure.dll

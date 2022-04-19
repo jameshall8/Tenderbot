@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "DmRHkd/KcZrluvy5rECQRVXNmmOs0iQbAFKifWFNb/DaXTcYSil1WPjlDdzjih08MZRkwzdFUnjTI/KJZOg+Cw==",
+  "dgSpecHash": "nWdaHKq7RG/lcVKJH1hUv9dXVq1dERLfk/d/OJ9Rpozl+h0LBgrM+qw7r4ZJfz4LIEwie7ffnKyXkxN8yGX0jQ==",
   "success": true,
   "projectFilePath": "/Users/macbook/Documents/TenderBotGit/tenderbot/TenderBotGit.csproj",
   "expectedPackageFiles": [
@@ -15,6 +15,7 @@
     "/Users/macbook/.nuget/packages/microsoft.azure.cosmos.table/1.0.8/microsoft.azure.cosmos.table.1.0.8.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.azure.documentdb.core/2.11.2/microsoft.azure.documentdb.core.2.11.2.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.azure.keyvault.core/2.0.4/microsoft.azure.keyvault.core.2.0.4.nupkg.sha512",
+    "/Users/macbook/.nuget/packages/microsoft.azure.management.containerregistry/6.0.0/microsoft.azure.management.containerregistry.6.0.0.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.azure.storage.common/11.2.3/microsoft.azure.storage.common.11.2.3.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.bcl.asyncinterfaces/1.1.1/microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.csharp/4.3.0/microsoft.csharp.4.3.0.nupkg.sha512",
@@ -22,6 +23,8 @@
     "/Users/macbook/.nuget/packages/microsoft.netcore.targets/1.1.0/microsoft.netcore.targets.1.1.0.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.odata.core/7.6.4/microsoft.odata.core.7.6.4.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.odata.edm/7.6.4/microsoft.odata.edm.7.6.4.nupkg.sha512",
+    "/Users/macbook/.nuget/packages/microsoft.rest.clientruntime/2.3.20/microsoft.rest.clientruntime.2.3.20.nupkg.sha512",
+    "/Users/macbook/.nuget/packages/microsoft.rest.clientruntime.azure/3.3.19/microsoft.rest.clientruntime.azure.3.3.19.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.spatial/7.6.4/microsoft.spatial.7.6.4.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.win32.primitives/4.3.0/microsoft.win32.primitives.4.3.0.nupkg.sha512",
     "/Users/macbook/.nuget/packages/microsoft.win32.registry/4.7.0/microsoft.win32.registry.4.7.0.nupkg.sha512",

@@ -12,6 +12,7 @@
           "Azure.Storage.Blobs": "12.11.0",
           "CsvHelper": "27.2.1",
           "Microsoft.Azure.Cosmos.Table": "1.0.8",
+          "Microsoft.Azure.Management.ContainerRegistry": "6.0.0",
           "Microsoft.Azure.Storage.Common": "11.2.3",
           "ScrapySharp": "3.0.0",
           "Slack.Webhooks": "1.1.5",
@@ -214,6 +215,20 @@
           }
         }
       },
+      "Microsoft.Azure.Management.ContainerRegistry/6.0.0": {
+        "dependencies": {
+          "Microsoft.Rest.ClientRuntime": "2.3.20",
+          "Microsoft.Rest.ClientRuntime.Azure": "3.3.19",
+          "Newtonsoft.Json": "10.0.3",
+          "System.Net.Http": "4.3.4"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Azure.Management.ContainerRegistry.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.0.0"
+          }
+        }
+      },
       "Microsoft.Azure.Storage.Common/11.2.3": {
         "dependencies": {
           "Microsoft.Azure.KeyVault.Core": "2.0.4",
@@ -274,6 +289,29 @@
           "lib/netstandard1.1/Microsoft.OData.Edm.dll": {
             "assemblyVersion": "7.6.4.0",
             "fileVersion": "7.6.4.10325"
+          }
+        }
+      },
+      "Microsoft.Rest.ClientRuntime/2.3.20": {
+        "dependencies": {
+          "Newtonsoft.Json": "10.0.3"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.3.20.0"
+          }
+        }
+      },
+      "Microsoft.Rest.ClientRuntime.Azure/3.3.19": {
+        "dependencies": {
+          "Microsoft.Rest.ClientRuntime": "2.3.20",
+          "Newtonsoft.Json": "10.0.3"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.Azure.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.3.18.0"
           }
         }
       },
@@ -1406,6 +1444,13 @@
       "path": "microsoft.azure.keyvault.core/2.0.4",
       "hashPath": "microsoft.azure.keyvault.core.2.0.4.nupkg.sha512"
     },
+    "Microsoft.Azure.Management.ContainerRegistry/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wDNHEysiqB4rsz19aLggeL/dqgKMCNl1CIoFR3H5PKQNYIFXxN/W7jJeMP/u+eXyatmMrpyuNPvzPwaqWu/KWQ==",
+      "path": "microsoft.azure.management.containerregistry/6.0.0",
+      "hashPath": "microsoft.azure.management.containerregistry.6.0.0.nupkg.sha512"
+    },
     "Microsoft.Azure.Storage.Common/11.2.3": {
       "type": "package",
       "serviceable": true,
@@ -1454,6 +1499,20 @@
       "sha512": "sha512-MSSmA6kIfpgFTtNpOnnayoSj/6KSzHC1U9KOjF7cTA1PG4tZ7rIMi1pvjFc8CmYEvP4cxGl/+vrCn+HpK26HTQ==",
       "path": "microsoft.odata.edm/7.6.4",
       "hashPath": "microsoft.odata.edm.7.6.4.nupkg.sha512"
+    },
+    "Microsoft.Rest.ClientRuntime/2.3.20": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-bw/H1nO4JdnhTagPHWIFQwtlQ6rb2jqw5RTrqPsPqzrjhJxc7P6MyNGdf4pgHQdzdpBSNOfZTEQifoUkxmzYXQ==",
+      "path": "microsoft.rest.clientruntime/2.3.20",
+      "hashPath": "microsoft.rest.clientruntime.2.3.20.nupkg.sha512"
+    },
+    "Microsoft.Rest.ClientRuntime.Azure/3.3.19": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+NVBWvRXNwaAPTZUxjUlQggsrf3X0GbiRoxYfgc3kG9E55ZxZxvZPT3nIfC4DNqzGSXUEvmLbckdXgBBzGdUaA==",
+      "path": "microsoft.rest.clientruntime.azure/3.3.19",
+      "hashPath": "microsoft.rest.clientruntime.azure.3.3.19.nupkg.sha512"
     },
     "Microsoft.Spatial/7.6.4": {
       "type": "package",

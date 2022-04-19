@@ -14,5 +14,6 @@
     <PackageReference Include="SlackAPI" Version="1.1.13"/>
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3"/>
     <PackageReference Include="Azure.Data.Tables" Version="12.5.0"/>
+    <PackageReference Include="Microsoft.Azure.Management.ContainerRegistry" Version="6.0.0"/>
   </ItemGroup>
 </Project>

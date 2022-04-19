@@ -206,6 +206,21 @@
           "lib/netstandard1.5/Microsoft.Azure.KeyVault.Core.dll": {}
         }
       },
+      "Microsoft.Azure.Management.ContainerRegistry/6.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Rest.ClientRuntime": "[2.3.20, 3.0.0)",
+          "Microsoft.Rest.ClientRuntime.Azure": "[3.3.19, 4.0.0)",
+          "Newtonsoft.Json": "10.0.3",
+          "System.Net.Http": "4.3.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Azure.Management.ContainerRegistry.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Azure.Management.ContainerRegistry.dll": {}
+        }
+      },
       "Microsoft.Azure.Storage.Common/11.2.3": {
         "type": "package",
         "dependencies": {
@@ -294,6 +309,31 @@
         },
         "runtime": {
           "lib/netstandard1.1/Microsoft.OData.Edm.dll": {}
+        }
+      },
+      "Microsoft.Rest.ClientRuntime/2.3.20": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "10.0.3"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.dll": {}
+        }
+      },
+      "Microsoft.Rest.ClientRuntime.Azure/3.3.19": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Rest.ClientRuntime": "[2.3.19, 3.0.0)",
+          "Newtonsoft.Json": "10.0.3"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.Azure.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.Azure.dll": {}
         }
       },
       "Microsoft.Spatial/7.6.4": {
@@ -2356,6 +2396,29 @@
         "microsoft.azure.keyvault.core.nuspec"
       ]
     },
+    "Microsoft.Azure.Management.ContainerRegistry/6.0.0": {
+      "sha512": "wDNHEysiqB4rsz19aLggeL/dqgKMCNl1CIoFR3H5PKQNYIFXxN/W7jJeMP/u+eXyatmMrpyuNPvzPwaqWu/KWQ==",
+      "type": "package",
+      "path": "microsoft.azure.management.containerregistry/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net452/Microsoft.Azure.Management.ContainerRegistry.dll",
+        "lib/net452/Microsoft.Azure.Management.ContainerRegistry.runtimeconfig.json",
+        "lib/net452/Microsoft.Azure.Management.ContainerRegistry.xml",
+        "lib/net461/Microsoft.Azure.Management.ContainerRegistry.dll",
+        "lib/net461/Microsoft.Azure.Management.ContainerRegistry.runtimeconfig.json",
+        "lib/net461/Microsoft.Azure.Management.ContainerRegistry.xml",
+        "lib/netstandard1.4/Microsoft.Azure.Management.ContainerRegistry.dll",
+        "lib/netstandard1.4/Microsoft.Azure.Management.ContainerRegistry.runtimeconfig.json",
+        "lib/netstandard1.4/Microsoft.Azure.Management.ContainerRegistry.xml",
+        "lib/netstandard2.0/Microsoft.Azure.Management.ContainerRegistry.dll",
+        "lib/netstandard2.0/Microsoft.Azure.Management.ContainerRegistry.runtimeconfig.json",
+        "lib/netstandard2.0/Microsoft.Azure.Management.ContainerRegistry.xml",
+        "microsoft.azure.management.containerregistry.6.0.0.nupkg.sha512",
+        "microsoft.azure.management.containerregistry.nuspec"
+      ]
+    },
     "Microsoft.Azure.Storage.Common/11.2.3": {
       "sha512": "WqX0ckhXQSUIBEq6wd2xgFz3KPjIONfDdgNg1ClQYxYTvuXQv3g3cnL9DGXCvuxEFZNPk0BJdQeW+uZwGqdDjw==",
       "type": "package",
@@ -2517,6 +2580,52 @@
         "lib/portable-net45+win8+wpa81/Microsoft.OData.Edm.xml",
         "microsoft.odata.edm.7.6.4.nupkg.sha512",
         "microsoft.odata.edm.nuspec"
+      ]
+    },
+    "Microsoft.Rest.ClientRuntime/2.3.20": {
+      "sha512": "bw/H1nO4JdnhTagPHWIFQwtlQ6rb2jqw5RTrqPsPqzrjhJxc7P6MyNGdf4pgHQdzdpBSNOfZTEQifoUkxmzYXQ==",
+      "type": "package",
+      "path": "microsoft.rest.clientruntime/2.3.20",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net452/Microsoft.Rest.ClientRuntime.dll",
+        "lib/net452/Microsoft.Rest.ClientRuntime.runtimeconfig.json",
+        "lib/net452/Microsoft.Rest.ClientRuntime.xml",
+        "lib/net461/Microsoft.Rest.ClientRuntime.dll",
+        "lib/net461/Microsoft.Rest.ClientRuntime.runtimeconfig.json",
+        "lib/net461/Microsoft.Rest.ClientRuntime.xml",
+        "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.dll",
+        "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.runtimeconfig.json",
+        "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.xml",
+        "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.dll",
+        "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.runtimeconfig.json",
+        "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.xml",
+        "microsoft.rest.clientruntime.2.3.20.nupkg.sha512",
+        "microsoft.rest.clientruntime.nuspec"
+      ]
+    },
+    "Microsoft.Rest.ClientRuntime.Azure/3.3.19": {
+      "sha512": "+NVBWvRXNwaAPTZUxjUlQggsrf3X0GbiRoxYfgc3kG9E55ZxZxvZPT3nIfC4DNqzGSXUEvmLbckdXgBBzGdUaA==",
+      "type": "package",
+      "path": "microsoft.rest.clientruntime.azure/3.3.19",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net452/Microsoft.Rest.ClientRuntime.Azure.dll",
+        "lib/net452/Microsoft.Rest.ClientRuntime.Azure.runtimeconfig.json",
+        "lib/net452/Microsoft.Rest.ClientRuntime.Azure.xml",
+        "lib/net461/Microsoft.Rest.ClientRuntime.Azure.dll",
+        "lib/net461/Microsoft.Rest.ClientRuntime.Azure.runtimeconfig.json",
+        "lib/net461/Microsoft.Rest.ClientRuntime.Azure.xml",
+        "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.Azure.dll",
+        "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.Azure.runtimeconfig.json",
+        "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.Azure.xml",
+        "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.Azure.dll",
+        "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.Azure.runtimeconfig.json",
+        "lib/netstandard2.0/Microsoft.Rest.ClientRuntime.Azure.xml",
+        "microsoft.rest.clientruntime.azure.3.3.19.nupkg.sha512",
+        "microsoft.rest.clientruntime.azure.nuspec"
       ]
     },
     "Microsoft.Spatial/7.6.4": {
@@ -7252,6 +7361,7 @@
       "Azure.Storage.Blobs >= 12.11.0",
       "CsvHelper >= 27.2.1",
       "Microsoft.Azure.Cosmos.Table >= 1.0.8",
+      "Microsoft.Azure.Management.ContainerRegistry >= 6.0.0",
       "Microsoft.Azure.Storage.Common >= 11.2.3",
       "ScrapySharp >= 3.0.0",
       "Slack.Webhooks >= 1.1.5",
@@ -7312,6 +7422,10 @@
           "Microsoft.Azure.Cosmos.Table": {
             "target": "Package",
             "version": "[1.0.8, )"
+          },
+          "Microsoft.Azure.Management.ContainerRegistry": {
+            "target": "Package",
+            "version": "[6.0.0, )"
           },
           "Microsoft.Azure.Storage.Common": {
             "target": "Package",
