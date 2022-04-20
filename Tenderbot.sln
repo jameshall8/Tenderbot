@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TenderBot-HiveIT", "TenderBot-HiveIT\TenderBot-HiveIT.csproj", "{FBD568C8-1A8C-4703-AA6A-1DC313CB62F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TenderBotTests", "TenderBotTests\TenderBotTests.csproj", "{5AC9133F-C01A-4CD2-89C4-102CBF3C846B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{FBD568C8-1A8C-4703-AA6A-1DC313CB62F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBD568C8-1A8C-4703-AA6A-1DC313CB62F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBD568C8-1A8C-4703-AA6A-1DC313CB62F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AC9133F-C01A-4CD2-89C4-102CBF3C846B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AC9133F-C01A-4CD2-89C4-102CBF3C846B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AC9133F-C01A-4CD2-89C4-102CBF3C846B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AC9133F-C01A-4CD2-89C4-102CBF3C846B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
