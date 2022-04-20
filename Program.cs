@@ -3,10 +3,8 @@ using HtmlAgilityPack;
 using System.Collections.Generic;
 using ScrapySharp.Extensions;
 using ScrapySharp.Network;
-using Slack.Webhooks;
 using Azure.Data.Tables;
 using Azure;
-using Microsoft.Azure.Management.ContainerRegistry.Models;
 
 
 namespace TenderBotGit
@@ -19,25 +17,23 @@ namespace TenderBotGit
 
         static void Main(string[] args)
         {
-            runProgram();
-
+            runScraper();
         }
 
-        static void runProgram()
+        static void runScraper()
         {
             //getting the individual links of the pages 
             var links = GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?statusOpenClosed=open&lot=digital-outcomes");
             //if link is digital outcomes then it returns 4 links not needed, if its digital outcomes and specialists then it only returns 3 not needed.
 
             //returns a list of Details objects 
+
+
             var Details = GetPageDetails(links);
-
-
             //loop through all the objects and send each to slack via web hook
             foreach (Details detail in Details)
             {
                 detail.sendToSlack(detail);
-
             }
         }
 
@@ -54,7 +50,7 @@ namespace TenderBotGit
                     pageLinks.Add(link.Attributes["href"].Value);
                 }
             }
-            return pageLinks; //pagelinks returns a couple of links that are not valid 
+            return GetRidOfNullURLs(pageLinks);
         }
 
         static List<Details> GetPageDetails(List<string> urls)
@@ -69,57 +65,24 @@ namespace TenderBotGit
                 var test = pageDetails.ID;
                 if (checkIfNew(pageDetails.ID))
                 {
-                    try
-                    {
-                        pageDetails.Title = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
-                        pageDetails.Department = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
+                        
+                        pageDetails.setDayRateOrBudget(HtmlNode);  
 
-                        try
-                        {
-                            pageDetails.Budget = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Budget')]/following-sibling::dd").InnerText;
-                            if (pageDetails.Budget == "")
-                            {
-                                pageDetails.Budget = "Did not specify budget";
-                            }
-                            pageDetails.BudgetOrDayRate = true;
+                        var Title = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
+                        var Department = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
+                        var PublishedDate = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
+                        var Deadline = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
+                        var Link = "https://www.digitalmarketplace.service.gov.uk" + url;
+                        var Description = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Summary')]/following-sibling::dd").InnerText;
+                        var Closing = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Closing')]/following-sibling::dd").InnerText;
+                        var Location = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
 
-                        }
-                        catch
-                        {
-                            try
-                            {
-                                pageDetails.Budget = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Maximum day')]/following-sibling::dd").InnerText;
-                                pageDetails.BudgetOrDayRate = false;
-                                if (pageDetails.Budget == "")
-                                {
-                                    pageDetails.Budget = "Did not specify budget";
-                                }
-                            }
-                            catch
-                            {
-                                pageDetails.Budget = "Budget unavailable for this tender";
-                                pageDetails.BudgetOrDayRate = true;
+                        pageDetails.setValues(Title, Department, PublishedDate, Deadline, Link, Description, Closing, Location);
 
-
-                            }
-                        }
-                        pageDetails.PublishedDate = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
-                        pageDetails.Deadline = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
-                        pageDetails.Link = "https://www.digitalmarketplace.service.gov.uk" + url;
-                        pageDetails.Description = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Summary')]/following-sibling::dd").InnerText;
-                        pageDetails.Closing = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Closing')]/following-sibling::dd").InnerText;
-                        pageDetails.Location = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
-
-
-                        addToDB(pageDetails);
+                        pageDetails.addToDB();
                         listpageDetails.Add(pageDetails);
 
                     }
-                    catch
-                    {
-                    }
-
-                }
                 else
                 {
                     break;
@@ -128,24 +91,19 @@ namespace TenderBotGit
             return listpageDetails;
 
         }
-        static void addToDB(Details details)
-        {
-            TableClient client = new TableClient("AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;", "Tenders");
 
-            var entity = new TableEntity("Tenders", details.ID)
-        {
-            { "ID", details.ID },
-            { "Title", details.Title },
-            { "Department", details.Department },
-            { "Link", details.Link },
-            { "Description", details.Description },
-            { "PublishedDate", details.PublishedDate },
-            { "Deadline", details.Deadline },
-            { "Closing", details.Closing },
-            { "Location", details.Location }
-        };
-            client.AddEntity(entity);
+        static List<string> GetRidOfNullURLs(List<string> List){
+                        
+            foreach (string URL in List.ToArray()){
+                char c = URL[URL.Length-1];
+
+                if (!Char.IsDigit(c)){
+                    List.Remove(URL);
+                }
+            }
+            return List;
         }
+
         static bool checkIfNew(string pageID)
         {
             TableClient client = new TableClient("AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;", "Tenders");
@@ -177,3 +135,5 @@ namespace TenderBotGit
     }
 
 }
+
+
