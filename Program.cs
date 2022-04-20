@@ -17,10 +17,10 @@ namespace TenderBotGit
 
         static void Main(string[] args)
         {
-            runScraper();
+            RunScraper();
         }
 
-        static void runScraper()
+        static void RunScraper()
         {
             //getting the individual links of the pages 
             var links = GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?statusOpenClosed=open&lot=digital-outcomes");
@@ -29,11 +29,11 @@ namespace TenderBotGit
             //returns a list of Details objects 
 
 
-            var Details = GetPageDetails(links);
+            var details = GetPageDetails(links);
             //loop through all the objects and send each to slack via web hook
-            foreach (Details detail in Details)
+            foreach (Details detail in details)
             {
-                detail.sendToSlack(detail);
+                detail.SendToSlack(detail);
             }
         }
 
@@ -42,15 +42,15 @@ namespace TenderBotGit
             var pageLinks = new List<string>();
             var html = GetHtml(url);
 
-            var Links = html.CssSelect("a");
-            foreach (var link in Links)
+            var links = html.CssSelect("a");
+            foreach (var link in links)
             {
                 if (link.Attributes["href"].Value.Contains("opportunities"))
                 {
                     pageLinks.Add(link.Attributes["href"].Value);
                 }
             }
-            return GetRidOfNullURLs(pageLinks);
+            return GetRidOfNull(pageLinks);
         }
 
         static List<Details> GetPageDetails(List<string> urls)
@@ -59,30 +59,29 @@ namespace TenderBotGit
 
             foreach (var url in urls)
             {
-                var HtmlNode = GetHtml("https://www.digitalmarketplace.service.gov.uk" + url);
+                var htmlNode = GetHtml("https://www.digitalmarketplace.service.gov.uk" + url);
                 var pageDetails = new Details();
-                pageDetails.ID = url.Substring(url.Length - 5);
-                var test = pageDetails.ID;
-                if (checkIfNew(pageDetails.ID))
+                pageDetails.Id = url.Substring(url.Length - 5);
+                if (CheckIfNew(pageDetails.Id))
                 {
                         
-                        pageDetails.setDayRateOrBudget(HtmlNode);  
+                        pageDetails.SetDayRateOrBudget(htmlNode);  
 
-                        var Title = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
-                        var Department = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
-                        var PublishedDate = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
-                        var Deadline = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
-                        var Link = "https://www.digitalmarketplace.service.gov.uk" + url;
-                        var Description = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Summary')]/following-sibling::dd").InnerText;
-                        var Closing = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Closing')]/following-sibling::dd").InnerText;
-                        var Location = HtmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
+                        var title = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
+                        var department = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
+                        var publishedDate = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
+                        var deadline = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
+                        var link = "https://www.digitalmarketplace.service.gov.uk" + url;
+                        var description = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Summary')]/following-sibling::dd").InnerText;
+                        var closing = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Closing')]/following-sibling::dd").InnerText;
+                        var location = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
 
-                        pageDetails.setValues(Title, Department, PublishedDate, Deadline, Link, Description, Closing, Location);
+                        pageDetails.SetValues(title, department, publishedDate, deadline, link, description, closing, location);
 
-                        pageDetails.addToDB();
+                        pageDetails.AddToDb();
                         listpageDetails.Add(pageDetails);
 
-                    }
+                }
                 else
                 {
                     break;
@@ -92,23 +91,23 @@ namespace TenderBotGit
 
         }
 
-        static List<string> GetRidOfNullURLs(List<string> List){
+        static List<string> GetRidOfNull(List<string> list){
                         
-            foreach (string URL in List.ToArray()){
-                char c = URL[URL.Length-1];
+            foreach (string url in list.ToArray()){
+                char c = url[url.Length-1];
 
                 if (!Char.IsDigit(c)){
-                    List.Remove(URL);
+                    list.Remove(url);
                 }
             }
-            return List;
+            return list;
         }
 
-        static bool checkIfNew(string pageID)
+        static bool CheckIfNew(string pageid)
         {
             TableClient client = new TableClient("AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;", "Tenders");
 
-            Pageable<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{pageID}'");
+            Pageable<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{pageid}'");
 
             int counter = 0;
 
@@ -124,9 +123,9 @@ namespace TenderBotGit
             return true;
         }
 
-        static HtmlNode GetHtml(string URL)
+        static HtmlNode GetHtml(string url)
         {
-            WebPage webPage = _scrapingBrowser.NavigateToPage(new Uri(URL));
+            WebPage webPage = _scrapingBrowser.NavigateToPage(new Uri(url));
             return webPage.Html;
 
         }
