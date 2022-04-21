@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using NUnit.Framework;
+using TenderBot_HiveIT;
 
 namespace TenderBotTests;
 
@@ -10,9 +12,40 @@ public class Tests
     }
 
     [Test]
-    public void Test1()
+    public void CheckIfNewId()
     {
-        Assert.True(true);
-        
+        Assert.True(Program.CheckIfNew("12345")); //passing in a new ID
     }
+
+    
+    [Test]
+    public void CheckIfAlreadyInDatabase()
+    {
+        Assert.False(Program.CheckIfNew("16883"));
+    }
+
+    [Test]
+    public void CheckLinksWithoutAnIdAreNotReturned()
+    {
+        var urlList = new List<string>();
+        urlList.Add("www.test@test.com/12345");
+        urlList.Add("www.test@test.com");
+        
+        Assert.That(Program.GetRidOfNull(urlList), Has.Exactly(1).Items.EqualTo("www.test@test.com/12345"));
+
+        urlList.Add("www.test@test.com/123456");
+        urlList.Add("www.test@test.com/123444");
+        urlList.Add("www.test@test.com/test");
+        
+        Assert.That(Program.GetRidOfNull(urlList), Has.Exactly(3).Items);
+
+
+
+
+
+
+
+    }
+    
+    
 }
