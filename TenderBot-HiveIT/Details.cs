@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Slack.Webhooks;
 using Azure.Data.Tables;
 using HtmlAgilityPack;
@@ -6,27 +7,27 @@ using HtmlAgilityPack;
 
 public class Details
     {
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         public bool BudgetOrDayRate { get; set; } //false == day rate 
 
-        public string Budget { get; set; }
+        public string? Budget { get; set; }
 
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
-        public string Department { get; set; }
+        public string? Department { get; set; }
 
-        public string Link { get; set; }
+        public string? Link { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        public string PublishedDate { get; set; }
+        public string? PublishedDate { get; set; }
 
-        public string Deadline { get; set; }
+        public string? Deadline { get; set; }
 
-        public string Closing { get; set; }
+        public string? Closing { get; set; }
 
-        public string Location { get; set; }
+        public string? Location { get; set; }
 
 
         public string checkIfDayRate(bool check)
@@ -53,7 +54,7 @@ public class Details
                     BudgetOrDayRate = true;
                 }
 
-                if (Budget == "")
+                if (Regex.Matches(Budget,@"[a-zA-Z]").Count < 1)
                 {
                     Budget = "Did not specify budget";
                 }                            

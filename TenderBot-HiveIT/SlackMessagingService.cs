@@ -11,7 +11,7 @@ public class SlackMessagingService : IMessagingService
 
             var slackMessage = new SlackMessage
             {
-                Channel = "#leads-tenders",
+                Channel = "#tenderbot-test",
                 Text = "New Tender Opportunity Posted",
                 IconEmoji = Emoji.RobotFace,
                 Username = "TenderBot"

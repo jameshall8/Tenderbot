@@ -81,7 +81,7 @@ public class Tests
             .Returns(false);
         
         var pro = new Program(mockDatabaseService.Object, mockScraperService.Object, mockSlackService.Object);
-        Assert.IsEmpty(program.ScrapeService.GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?statusOpenClosed=open&lot=digital-outcomes"));
+        Assert.IsNull(pro.ScrapeService.GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?statusOpenClosed=open&lot=digital-outcomes"));
     }
     
     [Test]
@@ -96,10 +96,8 @@ public class Tests
             .Setup(service => service.CheckIfNew(It.IsAny<string>()))
             .Returns(false);
         
-        
-        
         var pro = new Program(mockDatabaseService.Object, mockScraperService.Object, mockSlackService.Object);
-        Assert.That(program.ScrapeService.GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?statusOpenClosed=open&lot=digital-outcomes"), Has.Exactly(18).Items);
+        Assert.That(program.ScrapeService.GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?statusOpenClosed=open&lot=digital-outcomes"), Has.Exactly(17).Items);
     }
     
     

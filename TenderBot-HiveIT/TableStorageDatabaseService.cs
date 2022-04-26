@@ -7,9 +7,16 @@ public class TableStorageDatabaseService : IDatabaseService
 {
     public bool CheckIfNew(string pageid)
     {
-        var cs = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
+        string testcs = "AccountName=hiveittenderbotstorage;AccountKey=MhwmuUUF17wEq7noDPOKz06SspZL5IQ8KG0KXzldMnavXPjZLVbOQGAwQbN8FgoWeacwjbOTcHKu+ddQ34YxGw==;BlobEndpoint=https://hiveittenderbotstorage.blob.core.windows.net/;QueueEndpoint=https://hiveittenderbotstorage.queue.core.windows.net/;TableEndpoint=https://hiveittenderbotstorage.table.core.windows.net/;FileEndpoint=https://hiveittenderbotstorage.file.core.windows.net/;";
+        //test cs
+        
+        // var cs = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
+        
 
-        TableClient client = new TableClient(cs, "Tenders");
+
+        // TableClient client = new TableClient(cs, "Tenders");
+        TableClient client = new TableClient(testcs, "tenderstest"); //test
+
 
         Pageable<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{pageid}'");
 
@@ -32,9 +39,14 @@ public class TableStorageDatabaseService : IDatabaseService
 
     public void StoreDetails(Details details)
     {
-        var cs = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
+        string testcs = "AccountName=hiveittenderbotstorage;AccountKey=MhwmuUUF17wEq7noDPOKz06SspZL5IQ8KG0KXzldMnavXPjZLVbOQGAwQbN8FgoWeacwjbOTcHKu+ddQ34YxGw==;BlobEndpoint=https://hiveittenderbotstorage.blob.core.windows.net/;QueueEndpoint=https://hiveittenderbotstorage.queue.core.windows.net/;TableEndpoint=https://hiveittenderbotstorage.table.core.windows.net/;FileEndpoint=https://hiveittenderbotstorage.file.core.windows.net/;";
+        //test cs
+        
+        // var cs = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
 
-        TableClient client = new TableClient(cs, "Tenders");
+        // TableClient client = new TableClient(cs, "Tenders");
+
+        TableClient client = new TableClient(testcs, "tenderstest"); //test
 
         var entity = new TableEntity("Tenders", details.Id)
         {
