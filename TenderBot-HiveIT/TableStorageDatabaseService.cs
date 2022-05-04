@@ -12,8 +12,6 @@ public class TableStorageDatabaseService : IDatabaseService
         
         // var cs = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
         
-
-
         // TableClient client = new TableClient(cs, "Tenders");
         TableClient client = new TableClient(testcs, "tenderstest"); //test
 
@@ -62,6 +60,22 @@ public class TableStorageDatabaseService : IDatabaseService
         };
         client.AddEntity(entity);
     }
-    
+
+    public string GetUrlForMoreInfo(String ID)
+    {
+        string testcs =
+            "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
+        TableClient client = new TableClient(testcs, "Tenders"); //test
+
+        List<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{ID}'").ToList();
+        String URL = "";
+
+        foreach (var entity in entities)
+        {
+            URL = entity["Link"].ToString();
+        }
+
+        return URL;
+    }
     
 }

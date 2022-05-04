@@ -23,14 +23,14 @@ namespace TenderBot_HiveIT
 
         HtmlNode GetHtml(string url);
 
-        List<Details> GetNewPageDetails(List<string> urls);
+        List<Details> GetNewPageOverviewDetails(List<string> urls);
 
         List<string> GetRidOfNull(List<string> list);
     }
     
     public interface IMessagingService
     {
-        void SendToSlack(Details details);
+        void SendToTenderbotSlack(Details details);
         SlackAttachment GetAttachment(Details details);
     }
     
@@ -56,6 +56,9 @@ namespace TenderBot_HiveIT
 
         static void Main(string[] args)
         {
+            
+            
+            
             var tableService = new TableStorageDatabaseService();
             var scrapingService = new ScrapingDetailsRetrievalService(tableService);
             var messagingService = new SlackMessagingService();
@@ -74,11 +77,11 @@ namespace TenderBot_HiveIT
             //returns a list of Details objects 
 
 
-            var details = ScrapeService.GetNewPageDetails(links);
+            var details = ScrapeService.GetNewPageOverviewDetails(links);
             //loop through all the objects and send each to slack via web hook
             foreach (Details detail in details)
             {
-                SlackMessagingService.SendToSlack(detail);
+                SlackMessagingService.SendToTenderbotSlack(detail);
             }
         }
 

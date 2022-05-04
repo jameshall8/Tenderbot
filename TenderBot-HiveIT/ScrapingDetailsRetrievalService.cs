@@ -32,7 +32,7 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
         return GetRidOfNull(pageLinks);
     }
     
-        public List<Details> GetNewPageDetails(List<string> urls)
+        public List<Details> GetNewPageOverviewDetails(List<string> urls)
         {
             var listpageDetails = new List<Details>();
 
@@ -69,8 +69,37 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
             return listpageDetails;
 
         }
-    
-    public HtmlNode GetHtml(string url)
+        
+        public Details GetNewPageOverviewDetails(String url)
+        {
+
+            
+                var htmlNode = GetHtml(url);
+                var pageDetails = new Details();
+                pageDetails.Id = url.Substring(url.Length - 5);
+                
+                        
+                        pageDetails.SetDayRateOrBudget(htmlNode);  
+
+                        var title = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
+                        var department = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
+                        var publishedDate = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
+                        var deadline = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
+                        var link = "https://www.digitalmarketplace.service.gov.uk" + url;
+                        var description = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Summary')]/following-sibling::dd").InnerText;
+                        var closing = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Closing')]/following-sibling::dd").InnerText;
+                        var location = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
+
+                        pageDetails.SetValues(title, department, publishedDate, deadline, link, description, closing, location);
+                        
+                
+                
+            
+            return pageDetails;
+
+        }
+
+        public HtmlNode GetHtml(string url)
     {
         ScrapingBrowser ScrapingBrowser = new ScrapingBrowser();
 
@@ -90,5 +119,44 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
         }
         return list;
     }
+
+    public MoreDetails GetMoreInformationObject(String url)
+    {
+        var htmlNode = GetHtml(url);
+        var moreDetails = new MoreDetails();
+
+        if (htmlNode.OwnerDocument.DocumentNode
+                .SelectSingleNode("//dt[contains(text(), 'Why the work is being done')]/following-sibling::dd")
+                .InnerText != null)
+        {
+            moreDetails.WhyTheWorkIsBeingDone = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Why the work is being done')]/following-sibling::dd").InnerText;
+
+        }
+
+        if (htmlNode.OwnerDocument.DocumentNode
+                .SelectSingleNode("//dt[contains(text(), 'Who the users are and what they need to do')]/following-sibling::dd")
+                .InnerText != null)
+        {
+            moreDetails.UsersAndWhatTheyNeedToDo = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Who the users are and what they need to do')]/following-sibling::dd").InnerText;
+
+        }
+        
+        if (htmlNode.OwnerDocument.DocumentNode
+                     .SelectSingleNode("//dt[contains(text(), 'Any work that’s already been done')]/following-sibling::dd")
+                     .InnerText != null)
+        {
+            moreDetails.WorkThatsAlreadyBeenDone = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Any work that’s already been done')]/following-sibling::dd").InnerText;
+        }
+
+        return moreDetails;
+
+    }
+
+    public string getSpecificData(string dataWanted)
+    {
+        return "test";
+    }
+    
+    
     
 }
