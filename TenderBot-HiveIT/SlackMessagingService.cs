@@ -1,15 +1,22 @@
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Linq;
 using Slack.Webhooks;
-using Peaky.Slack.BlockKit;
-using Peaky.Slack.BlockKit.Composition;
-using Peaky.Slack.BlockKit.Elements;
-using Peaky.Slack.BlockKit.Entities;
-using Peaky.Slack.BlockKit.Layout;
 using Slack.Webhooks.Blocks;
+using Slack.Webhooks.Elements;
 
 namespace TenderBot_HiveIT;
 
 public class SlackMessagingService : IMessagingService
 {
+
+    public SlackClient GetSlackClient()
+    {
+        //test webhook 
+        var slackClient =
+            new SlackClient("https://hooks.slack.com/services/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");
+
+        return slackClient;
+    }
 
     public void SendToTenderbotSlack(Details details)
     {
@@ -18,38 +25,86 @@ public class SlackMessagingService : IMessagingService
         // var slackClient = new SlackClient("https://hooks.slack.com/services/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");
 
         //test webhook 
-        var slackClient =
-            new SlackClient("https://hooks.slack.com/services/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");
+        var slackClient = GetSlackClient();
+
+        var message = GetSlackMessageTemplate();
+
+        var slackAttachment = GetAttachment(details);
+        message.Attachments = new List<SlackAttachment> { slackAttachment };
+        slackClient.Post(message);
+        SendTrailMessage(details, slackClient);
+    }
+
+    private void SendTrailMessage(Details details, SlackClient client)
+    {
+        var message = GetSlackMessageTemplate();
+
+        message.Blocks = GetBlockForTender(details);
+
+        client.Post(message);
 
 
+    }
+
+    private SlackMessage GetSlackMessageTemplate()
+    {
         var slackMessage = new SlackMessage
         {
             Channel = "#tenderbot-favourites",
             Text = "New Tender Opportunity Posted",
             IconEmoji = Emoji.RobotFace,
-            Username = "TenderBot"
+            Username = "TenderBot",
         };
-        var slackAttachment = GetAttachment(details);
-        slackMessage.Attachments = new List<SlackAttachment> { slackAttachment };
-        slackClient.Post(slackMessage);
+        return slackMessage;
+    }
+    
+    private SlackMessage GetSlackMoreInfoMessageTemplate()
+    {
+        var slackMessage = new SlackMessage
+        {
+            Channel = "#leads-tenders",
+            Text = "New Tender Opportunity Posted",
+            IconEmoji = Emoji.RobotFace,
+            Username = "TenderBot",
+        };
+        return slackMessage;
+    }
+
+    public SlackMessage GetInteractiveSlackMessage(Details details)
+    {
+        var slackMessage = GetSlackMessageTemplate();
+
+        slackMessage.Blocks = GetBlockForTender(details);
+
+        return slackMessage;
     }
 
     public void SendMoreInfoToSlack(MoreDetails details, string id)
     {
-        var slackClient =
-            new SlackClient("https://hooks.slack.com/services/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");
+        var tableService = new TableStorageDatabaseService();
 
-        var slackMessage = new SlackMessage
+        if (tableService.CheckIfNew(id) == false)
         {
-            Channel = "#leads-tenders",
-            Text = "More Info Below for tender " + id,
-            IconEmoji = Emoji.RobotFace,
-            Username = "TenderBot"
-        };
-        var slackAttachment = GetAttachment(details, id);
-        slackMessage.Attachments = new List<SlackAttachment> { slackAttachment };
-        slackClient.Post(slackMessage);
+            var url = tableService.GetUrlForMoreInfo(id);
+            var scrapingService = new ScrapingDetailsRetrievalService(tableService);
+
+            MoreDetails moreDetails = scrapingService.GetMoreInformationObject(url);
+
+            SlackMessagingService slackService = new SlackMessagingService();
+
+            var attachment = slackService.GetAttachment(moreDetails, id);
+
+            SlackMessage message = GetSlackMoreInfoMessageTemplate();
+            
+            message.Attachments = new List<SlackAttachment> { attachment };
+            
+            var slackClient = GetSlackClient();
+
+            slackClient.Post(message);
+        }
     }
+
+    
 
 
 
@@ -87,14 +142,6 @@ public class SlackMessagingService : IMessagingService
                         Short = true
 
                     },
-                    new SlackField
-                    {
-                        Title = "ID",
-                        Value = details.Id,
-                        Short = true
-
-                    }
-
                 },
             ThumbUrl = details.Link,
         };
@@ -135,34 +182,159 @@ public class SlackMessagingService : IMessagingService
         return slackAttachment;
     }
 
-    public void GetBlockAttachment()
+    private List<Block> GetBlockForTender(Details details)
     {
-
-        BlockMessage blockMessage = new BlockMessage()
+        var blocks = new List<Block>()
         {
-            Blocks =
+            new Divider(),
+            new Header()
             {
-                new SectionBlock()
+                Text = new TextObject()
                 {
-                    BlockId = "block1",
-                    Text = new PlainTextComposition()
-                    {
-                        Text = "hello hello"
-                    },
-                    Accessory = new ButtonElement()
-                    {
-                        Text = new PlainTextComposition()
-                        {
-                            Text = "hello"
-                        },
-                        Value = "45545"
-                    }
-
+                    Text = "Actions for this tender"
                 }
+            },
+            
+            new Section()
+            {
+                Text = new TextObject()
+                {
+                    Text = "This button will post the tender in favourites",
+                    Type = TextObject.TextType.Markdown
+                },
+
+                Accessory = new Button()
+                {
+                    Type = ElementType.Button,
+                    ActionId = "button-action",
+                    Value = details.Id,
+                    Text = new TextObject()
+                            {
+                                Type = TextObject.TextType.PlainText,
+                                Text = "Send To Favourites",
+                                Emoji = true        
+                }       
+                }
+                },
+                new Section()
+                {
+                Text = new TextObject()
+                {
+                Text = "This button will post more information",
+                Type = TextObject.TextType.Markdown
+            },
+
+            Accessory = new Button()
+            {
+                Type = ElementType.Button,
+                ActionId = "button-action",
+                Value = details.Id,
+                Text = new TextObject()
+                {
+                    Type = TextObject.TextType.PlainText,
+                    Text = "More Info",
+                    Emoji = true        
+                }              
+            }
+        }
+        };
+        return blocks;
+    }
+
+    public List<Block> GetDropDownBlockForMoreInfo()
+    {
+        var blocks = new List<Block>()
+        {
+            new Header()
+            {
+                Text = new TextObject()
+                {
+                    Text = "Hello testy boy lol"
+                }
+            },
+            new Divider(),
+            new Section()
+            {
+                Text = new TextObject()
+                {
+                    Text = "Pick an item from the dropdown",
+                    Type = TextObject.TextType.Markdown
+                },
+
+                Accessory = new SelectStatic()
+                {
+                    ActionId = "radio_buttons-action",
+                    Placeholder = new TextObject()
+                    {
+                        Type = TextObject.TextType.PlainText,
+                        Text = "select an item",
+                        Emoji = true
+                    },
+                    Options = new List<Option>()
+                    {
+                        new()
+                        {
+                            Text = new TextObject()
+                            {
+                                Type = TextObject.TextType.PlainText,
+                                Text = "this is plain text",
+                                Emoji = true
+                            }
+                        },
+                        new()
+                        {
+                            Text = new TextObject()
+                            {
+                                Type = TextObject.TextType.PlainText,
+                                Text = "this is plain text",
+                                Emoji = true
+                            }
+                        },
+                        new()
+                        {
+                            Text = new TextObject()
+                            {
+                                Type = TextObject.TextType.PlainText,
+                                Text = "this is plain text",
+                                Emoji = true
+                            }
+                        },
+                    }
+                }
+
             }
         };
-
-
-
+        return blocks;
     }
+    public string GetId(string payload)
+    {
+
+        JObject obj = JObject.Parse(payload);
+        var actions = obj["actions"];
+        
+        var actionsKeyValue = actions[0];
+        
+        var id = actionsKeyValue["value"].ToString();
+        
+        return id;
+    }
+    
+    public string GetText(string payload)
+    {
+
+        JObject obj = JObject.Parse(payload);
+        var actions = obj["actions"];
+        
+        var actionsKeyValue = actions[0];
+        
+        var textArray = actionsKeyValue["text"].ToString();
+
+        
+        obj = JObject.Parse(textArray);
+        
+        var text = obj["text"].ToString();
+        
+        return text;
+    }
+    
 }

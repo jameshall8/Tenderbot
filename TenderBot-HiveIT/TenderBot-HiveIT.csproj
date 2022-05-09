@@ -17,4 +17,10 @@
       <PackageReference Include="Slack.Webhooks" Version="1.1.5" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Primitives">
+        <HintPath>..\..\..\..\.AzureToolsForIntelliJ\AzureFunctionsCoreTools\v4\4.13.0\Microsoft.Extensions.Primitives.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

@@ -45,78 +45,6 @@ public static class MoreInfo
         }
         else
         {
-            // Root root = new Root()
-            // {
-            // var Blocks = new List<Block>
-            // {
-            //     new Block()
-            //     {
-            //         Type = "divider"
-            //     },
-            //     new Block()
-            //     {
-            //         Type = "section",
-            //         Text = new Text()
-            //         {
-            //             Type = "plain_text",
-            //             text = "this is a plain text section block",
-            //             Emoji = true
-            //         }
-            //
-            //     },
-            //     new Block()
-            //     {
-            //         Type = "section",
-            //         Text = new Text()
-            //         {
-            //             Type = "mrkdwn",
-            //             text = "Section block with radio buttons"
-            //         },
-            //         Accessory = new Accessory()
-            //         {
-            //             Type = "radio_buttons",
-            //             Options = new List<Option>()
-            //             {
-            //                 new Option()
-            //                 {
-            //                     Text = new Text()
-            //                     {
-            //                         Type = "plain_text",
-            //                         text = "this is plain text",
-            //                         Emoji = true
-            //
-            //                     },
-            //                     Value = "value-0"
-            //                 },
-            //                 new Option()
-            //                 {
-            //                     Text = new Text()
-            //                     {
-            //                         Type = "plain_text",
-            //                         text = "this is plain text",
-            //                         Emoji = true
-            //
-            //                     },
-            //                     Value = "value-1"
-            //                 },
-            //                 new Option()
-            //                 {
-            //                     Text = new Text()
-            //                     {
-            //                         Type = "plain_text",
-            //                         text = "this is plain text",
-            //                         Emoji = true
-            //
-            //                     },
-            //                     Value = "value-2"
-            //                 }
-            //
-            //             },
-            //             action_id = "radio_buttons-action"
-            //         }
-            //     }
-            // };
-            // // };
             
             var slacker =
                 new SlackClient("https://hooks.slack.com/services/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");
@@ -143,8 +71,6 @@ public static class MoreInfo
                             Text = "Hello testy boy lol"
                         } 
                     },
-                    new Divider(),
-                    new Divider(),
                     new Divider(),
                     new Section()
                     {

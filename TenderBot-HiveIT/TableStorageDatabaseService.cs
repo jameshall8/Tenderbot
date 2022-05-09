@@ -63,9 +63,9 @@ public class TableStorageDatabaseService : IDatabaseService
 
     public string GetUrlForMoreInfo(String ID)
     {
-        string testcs =
-            "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
-        TableClient client = new TableClient(testcs, "Tenders"); //test
+        string testcs = "AccountName=hiveittenderbotstorage;AccountKey=MhwmuUUF17wEq7noDPOKz06SspZL5IQ8KG0KXzldMnavXPjZLVbOQGAwQbN8FgoWeacwjbOTcHKu+ddQ34YxGw==;BlobEndpoint=https://hiveittenderbotstorage.blob.core.windows.net/;QueueEndpoint=https://hiveittenderbotstorage.queue.core.windows.net/;TableEndpoint=https://hiveittenderbotstorage.table.core.windows.net/;FileEndpoint=https://hiveittenderbotstorage.file.core.windows.net/;";
+        
+        TableClient client = new TableClient(testcs, "tenderstest"); //test
 
         List<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{ID}'").ToList();
         String URL = "";
