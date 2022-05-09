@@ -60,7 +60,7 @@ public class Details
                 }                            
         }
 
-        public void SetValues(string title, string department, string publishedDate,string deadline,string link,string description,string closing,string location){
+        public void SetValues(string title, string department, string publishedDate,string deadline,string? link,string description,string closing,string location){
             Title = title;
             Department = department;
             PublishedDate = publishedDate;

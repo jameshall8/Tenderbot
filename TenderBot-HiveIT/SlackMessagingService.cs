@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using Slack.Webhooks;
 using Slack.Webhooks.Blocks;
@@ -39,11 +38,20 @@ public class SlackMessagingService : IMessagingService
     {
         var message = GetSlackMessageTemplate();
 
-        message.Blocks = GetBlockForTender(details);
-
+        List<String> tags = getDlTags(details.Link);
+        
+        message.Blocks = GetBlockForTender(details, tags);
+        
         client.Post(message);
+    }
 
+    private List<String> getDlTags(string? url)
+    {
+        var tableservice = new TableStorageDatabaseService();
+        var scrapingService = new ScrapingDetailsRetrievalService(tableservice);
+        List<String> tags = scrapingService.GetAllPageDtTagsFromPage(url);
 
+        return tags;
     }
 
     private SlackMessage GetSlackMessageTemplate()
@@ -67,15 +75,6 @@ public class SlackMessagingService : IMessagingService
             IconEmoji = Emoji.RobotFace,
             Username = "TenderBot",
         };
-        return slackMessage;
-    }
-
-    public SlackMessage GetInteractiveSlackMessage(Details details)
-    {
-        var slackMessage = GetSlackMessageTemplate();
-
-        slackMessage.Blocks = GetBlockForTender(details);
-
         return slackMessage;
     }
 
@@ -182,7 +181,7 @@ public class SlackMessagingService : IMessagingService
         return slackAttachment;
     }
 
-    private List<Block> GetBlockForTender(Details details)
+    private List<Block> GetBlockForTender(Details details, List<String> tags)
     {
         var blocks = new List<Block>()
         {
@@ -253,26 +252,34 @@ public class SlackMessagingService : IMessagingService
                             Text = "Select an item",
                             Emoji = true
                         },
-                        Options = new List<Option>()
-                        {
-                            new Option()
-                            {
-                                Text = new TextObject()
-                                {
-                                    Type = TextObject.TextType.PlainText,
-                                    Text = "testest",
-                                    Emoji = true
-                                },
-                                Value = "value-0"
-                                
-                            }
-                        },
+                        Options = GetOptionForSelect(tags, details.Id),
                         ActionId = "multi_static_select-action"
                     }
                     
                 }
         };
         return blocks;
+    }
+
+    private List<Option> GetOptionForSelect(List<string> tags, string? iD)
+    {
+        List<Option> options = new List<Option>();
+        foreach (String tag in tags)
+        {
+            
+            options.Add(new Option()
+            {
+                Text = new TextObject()
+                {
+                    Type = TextObject.TextType.PlainText,
+                    Text = tag,
+                    Emoji = true
+                },
+                Value = iD
+            });
+        }
+
+        return options;
     }
 
     public List<Block> GetDropDownBlockForMoreInfo()

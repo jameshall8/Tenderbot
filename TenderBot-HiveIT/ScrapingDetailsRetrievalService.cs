@@ -16,7 +16,7 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
     
 
 
-        public List<string> GetPageLinks(string url)
+        public List<string> GetPageLinks(string? url)
     {
         var pageLinks = new List<string>();
         var html = GetHtml(url);
@@ -31,8 +31,20 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
         }
         return GetRidOfNull(pageLinks);
     }
-        
-        // public void GetAllPageDDTga
+
+        public List<String> GetAllPageDtTagsFromPage(string? url)
+        {
+            var dlTags = new List<string>();
+            var html = GetHtml(url);
+
+            var tags = html.CssSelect("dt");
+            foreach (var tag in tags)
+            {
+                dlTags.Add(tag.InnerHtml.Trim());
+            }
+
+            return dlTags;
+        }
     
         public List<Details> GetNewPageOverviewDetails(List<string> urls)
         {
@@ -72,7 +84,7 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
 
         }
         
-        public Details GetNewPageOverviewDetails(String url)
+        public Details GetNewPageOverviewDetails(string? url)
         {
 
             
@@ -100,7 +112,7 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
 
         }
 
-        public HtmlNode GetHtml(string url)
+        public HtmlNode GetHtml(string? url)
     {
         ScrapingBrowser ScrapingBrowser = new ScrapingBrowser();
 
@@ -121,7 +133,7 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
         return list;
     }
 
-    public MoreDetails GetMoreInformationObject(String url)
+    public MoreDetails GetMoreInformationObject(string? url)
     {
         var htmlNode = GetHtml(url);
         var moreDetails = new MoreDetails();

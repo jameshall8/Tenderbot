@@ -61,14 +61,14 @@ public class TableStorageDatabaseService : IDatabaseService
         client.AddEntity(entity);
     }
 
-    public string GetUrlForMoreInfo(String ID)
+    public string? GetUrlForMoreInfo(String ID)
     {
         string testcs = "AccountName=hiveittenderbotstorage;AccountKey=MhwmuUUF17wEq7noDPOKz06SspZL5IQ8KG0KXzldMnavXPjZLVbOQGAwQbN8FgoWeacwjbOTcHKu+ddQ34YxGw==;BlobEndpoint=https://hiveittenderbotstorage.blob.core.windows.net/;QueueEndpoint=https://hiveittenderbotstorage.queue.core.windows.net/;TableEndpoint=https://hiveittenderbotstorage.table.core.windows.net/;FileEndpoint=https://hiveittenderbotstorage.file.core.windows.net/;";
         
         TableClient client = new TableClient(testcs, "tenderstest"); //test
 
         List<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{ID}'").ToList();
-        String URL = "";
+        string? URL = "";
 
         foreach (var entity in entities)
         {

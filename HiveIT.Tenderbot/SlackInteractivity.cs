@@ -24,6 +24,10 @@ public static class SlackInteractivity
     {
         var payload = req.Form["payload"];
 
+        var url = "";
+
+        var tableService = new TableStorageDatabaseService();
+
         var messagingService = new SlackMessagingService();
 
         string id = messagingService.GetId(payload).Trim();
@@ -33,14 +37,12 @@ public static class SlackInteractivity
         {
             messagingService.SendMoreInfoToSlack(new MoreDetails(), id);   
         }
-        else
+        else if (text == "Send To Favourites")
         {
-            var tableService = new TableStorageDatabaseService();
-
-        
             if (tableService.CheckIfNew(id) == false)
             {
-                var url = tableService.GetUrlForMoreInfo(id);
+                url = tableService.GetUrlForMoreInfo(id);
+                
                 var scrapingService = new ScrapingDetailsRetrievalService(tableService);
 
                 Details details = scrapingService.GetNewPageOverviewDetails(url);
@@ -50,7 +52,11 @@ public static class SlackInteractivity
                 slackService.SendToTenderbotSlack(details);
                 
             }
-        }  
+        }
+        else
+        {
+            
+        }
         SlackResponse response = new SlackResponse()
         {
             ResponseType = "in_channel",

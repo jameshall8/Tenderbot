@@ -19,9 +19,9 @@ namespace TenderBot_HiveIT
     
     public interface IDetailsRetrievalService
     {
-        List<string> GetPageLinks(string url);
+        List<string> GetPageLinks(string? url);
 
-        HtmlNode GetHtml(string url);
+        HtmlNode GetHtml(string? url);
 
         List<Details> GetNewPageOverviewDetails(List<string> urls);
 
