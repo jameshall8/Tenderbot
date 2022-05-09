@@ -83,7 +83,7 @@ public class SlackMessagingService : IMessagingService
     {
         var tableService = new TableStorageDatabaseService();
 
-        if (tableService.CheckIfNew(id) == false)
+        if (tableService.CheckIfNew(id) == false) //checking that the ID is within the DB
         {
             var url = tableService.GetUrlForMoreInfo(id);
             var scrapingService = new ScrapingDetailsRetrievalService(tableService);
@@ -236,7 +236,41 @@ public class SlackMessagingService : IMessagingService
                     Emoji = true        
                 }              
             }
-        }
+        },
+                new Section()
+                {
+                    Text = new TextObject()
+                    {
+                        Type = TextObject.TextType.Markdown,
+                        Text = "Pick Information To Post"
+                    },
+                    Accessory = new MultiSelectStatic()
+                    {
+                        
+                        Placeholder = new TextObject()
+                        {
+                            Type = TextObject.TextType.PlainText,
+                            Text = "Select an item",
+                            Emoji = true
+                        },
+                        Options = new List<Option>()
+                        {
+                            new Option()
+                            {
+                                Text = new TextObject()
+                                {
+                                    Type = TextObject.TextType.PlainText,
+                                    Text = "testest",
+                                    Emoji = true
+                                },
+                                Value = "value-0"
+                                
+                            }
+                        },
+                        ActionId = "multi_static_select-action"
+                    }
+                    
+                }
         };
         return blocks;
     }

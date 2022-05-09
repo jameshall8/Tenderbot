@@ -31,6 +31,8 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
         }
         return GetRidOfNull(pageLinks);
     }
+        
+        // public void GetAllPageDDTga
     
         public List<Details> GetNewPageOverviewDetails(List<string> urls)
         {
@@ -85,12 +87,11 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
                         var department = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
                         var publishedDate = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
                         var deadline = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
-                        var link = "https://www.digitalmarketplace.service.gov.uk" + url;
                         var description = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Summary')]/following-sibling::dd").InnerText;
                         var closing = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Closing')]/following-sibling::dd").InnerText;
                         var location = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
 
-                        pageDetails.SetValues(title, department, publishedDate, deadline, link, description, closing, location);
+                        pageDetails.SetValues(title, department, publishedDate, deadline, url, description, closing, location);
                         
                 
                 
