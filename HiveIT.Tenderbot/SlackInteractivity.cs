@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Slack.Webhooks;
 using TenderBot_HiveIT;
 
 namespace HiveIT.Tenderbot;
@@ -29,16 +30,20 @@ public static class SlackInteractivity
         var tableService = new TableStorageDatabaseService();
 
         var messagingService = new SlackMessagingService();
-
-        string id = messagingService.GetId(payload).Trim();
+        
         string text = messagingService.GetText(payload).Trim();
+        
+        
+        
 
         if (text == "More Info")
         {
+            string id = messagingService.GetId(payload).Trim();
             messagingService.SendMoreInfoToSlack(new MoreDetails(), id);   
         }
         else if (text == "Send To Favourites")
         {
+            string id = messagingService.GetId(payload).Trim();
             if (tableService.CheckIfNew(id) == false)
             {
                 url = tableService.GetUrlForMoreInfo(id);
@@ -46,15 +51,14 @@ public static class SlackInteractivity
                 var scrapingService = new ScrapingDetailsRetrievalService(tableService);
 
                 Details details = scrapingService.GetNewPageOverviewDetails(url);
-
-                SlackMessagingService slackService = new SlackMessagingService();
-            
-                slackService.SendToTenderbotSlack(details);
+                messagingService.SendToTenderbotSlack(details);
                 
             }
         }
-        else
+        else if (text == "select")
         {
+            var selected = messagingService.GetSelected(payload);
+            
             
         }
         SlackResponse response = new SlackResponse()
