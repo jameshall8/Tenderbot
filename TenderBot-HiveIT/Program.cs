@@ -30,7 +30,7 @@ namespace TenderBot_HiveIT
     
     public interface IMessagingService
     {
-        void SendToTenderbotSlack(Details details);
+        void SendToTenderbotSlack(Details details, bool favorite);
         SlackAttachment GetAttachment(Details details);
     }
     
@@ -75,13 +75,12 @@ namespace TenderBot_HiveIT
             //if link is digital outcomes then it returns 4 links not needed, if its digital outcomes and specialists then it only returns 3 not needed.
 
             //returns a list of Details objects 
-
-
+            
             var details = ScrapeService.GetNewPageOverviewDetails(links);
             //loop through all the objects and send each to slack via web hook
             foreach (Details detail in details)
             {
-                SlackMessagingService.SendToTenderbotSlack(detail);
+                SlackMessagingService.SendToTenderbotSlack(detail, false);
             }
         }
 

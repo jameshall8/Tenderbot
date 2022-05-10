@@ -1,18 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Slack.Webhooks;
 using TenderBot_HiveIT;
 
 namespace HiveIT.Tenderbot;
@@ -24,46 +14,52 @@ public static class SlackInteractivity
         [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]
         HttpRequest req, ILogger log)
     {
-        var payload = req.Form["payload"];
+        var messagingService = new SlackMessagingService();
 
-            var url = "";
+        try
+        {
+            var payload = req.Form["payload"];
+
+            string url;
 
             var tableService = new TableStorageDatabaseService();
             var scrapingService = new ScrapingDetailsRetrievalService(tableService);
+            var payloadService = new PayloadFormattingService();
 
-            var messagingService = new SlackMessagingService();
+            string text = payloadService.GetText(payload).Trim();
 
-            string text = messagingService.GetText(payload).Trim();
-
-
-
-
-            if (text == "More Info")
+            if (text == "Send To Favourites")
             {
-                string id = messagingService.GetId(payload).Trim();
-                messagingService.SendMoreInfoToSlack(new MoreDetails(), id);
-            }
-            else if (text == "Send To Favourites")
-            {
-                string id = messagingService.GetId(payload).Trim();
+                string username = payloadService.GetUsername(payload);
+                string id = payloadService.GetId(payload).Trim();
                 if (tableService.CheckIfNew(id) == false)
                 {
                     url = tableService.GetUrlForMoreInfo(id);
                     Details details = scrapingService.GetNewPageOverviewDetails(url);
-                    messagingService.SendToTenderbotSlack(details);
+                    string name = payloadService.GetUsername(payload);
+                    messagingService.SendToTenderbotSlack(details, true, name);
 
                 }
             }
             else if (text == "select")
             {
+                var selected = payloadService.GetSelected(payload);
+                string id = payloadService.GetSelectedId(payload);
 
-                var selected = messagingService.GetSelected(payload);
-                string id = messagingService.GetSelectedID(payload);
                 url = tableService.GetUrlForMoreInfo(id);
 
-                messagingService.PostSelectedDataToSlack(scrapingService, selected, url);
+                if (url != null) messagingService.PostSelectedDataToSlack(scrapingService, selected, url);
             }
-            
+        }
+        catch (NullReferenceException e)
+        {
+            messagingService.PostObjectErrorMessage(e);
+        }
+        catch (UriFormatException uri)
+        {
+            messagingService.PostObjectErrorMessage(uri);
+        }
+
     }
 
 

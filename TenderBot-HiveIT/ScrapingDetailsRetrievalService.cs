@@ -170,7 +170,7 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
 
         var htmlNode = GetHtml(url);
 
-        string text  = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Any work that’s already been done')]/following-sibling::dd").InnerText;
+        string text  = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), '"+ tag + "')]/following-sibling::dd").InnerText;
         
         return text;
     }
