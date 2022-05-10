@@ -165,9 +165,14 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
 
     }
 
-    public string getSpecificData(string dataWanted)
+    public String GetSelectedData(string tag, string url)
     {
-        return "test";
+
+        var htmlNode = GetHtml(url);
+
+        string text  = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Any work that’s already been done')]/following-sibling::dd").InnerText;
+        
+        return text;
     }
     
     

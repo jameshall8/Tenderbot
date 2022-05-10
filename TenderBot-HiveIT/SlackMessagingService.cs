@@ -54,6 +54,7 @@ public class SlackMessagingService : IMessagingService
         return tags;
     }
 
+    
     private SlackMessage GetSlackMessageTemplate()
     {
         var slackMessage = new SlackMessage
@@ -71,7 +72,7 @@ public class SlackMessagingService : IMessagingService
         var slackMessage = new SlackMessage
         {
             Channel = "#leads-tenders",
-            Text = "New Tender Opportunity Posted",
+            Text = "Requested Info Posted Below",
             IconEmoji = Emoji.RobotFace,
             Username = "TenderBot",
         };
@@ -405,5 +406,55 @@ public class SlackMessagingService : IMessagingService
 
         return selectedText;
     }
-    
+
+    public void PostSelectedDataToSlack(ScrapingDetailsRetrievalService scrapingService, List<string> selected, string url)
+    {
+        SlackMessage message = GetSlackMoreInfoMessageTemplate();
+        var attachment = GetSelectedMessageAttachment(selected, scrapingService, url);
+
+        message.Attachments = new List<SlackAttachment>
+        {
+            attachment
+        };
+        var client = GetSlackClient();
+
+        client.Post(message);
+    }
+
+
+    private SlackAttachment GetSelectedMessageAttachment(List<string> selected, ScrapingDetailsRetrievalService scraper, string url)
+    {
+        var slackAttachment = new SlackAttachment
+        {
+            Fallback = "Test",
+            Color = "#0b0c0c",
+            Fields =
+                new List<SlackField>
+                {
+                },
+        };
+
+        foreach (var select in selected)
+        {
+            slackAttachment.Fields.Add(new SlackField
+            {
+                Title = select,
+                Value = scraper.GetSelectedData(select, url),
+            });
+
+        }
+
+        return slackAttachment;
+    }
+
+    public string GetSelectedID(string payload)
+    {
+        JObject obj = JObject.Parse(payload);
+        var a = obj["message"];
+        var b = a["blocks"][3]["accessory"]["value"].ToString().Trim();
+        
+        return b;
+    }
+
+
 }
