@@ -11,8 +11,16 @@
     <ItemGroup>
       <PackageReference Include="Azure.Data.Tables" Version="12.5.0" />
       <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
+      <PackageReference Include="MargieBot" Version="2.0.5" />
+      <PackageReference Include="Peaky.Slack.BlockKit" Version="0.2.1" />
       <PackageReference Include="ScrapySharp" Version="3.0.0" />
       <PackageReference Include="Slack.Webhooks" Version="1.1.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Primitives">
+        <HintPath>..\..\..\..\.AzureToolsForIntelliJ\AzureFunctionsCoreTools\v4\4.13.0\Microsoft.Extensions.Primitives.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

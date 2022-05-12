@@ -97,8 +97,10 @@ public class Tests
             .Returns(false);
         
         var pro = new Program(mockDatabaseService.Object, mockScraperService.Object, mockSlackService.Object);
-        Assert.That(program.ScrapeService.GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?statusOpenClosed=open&lot=digital-outcomes"), Has.Exactly(17).Items);
+        Assert.That(program.ScrapeService.GetPageLinks("https://www.digitalmarketplace.service.gov.uk/digital-outcomes-and-specialists/opportunities?statusOpenClosed=open&lot=digital-outcomes"), Has.Exactly(20).Items);
     }
     
     
+
+
 }
