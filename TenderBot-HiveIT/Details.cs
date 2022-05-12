@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using Slack.Webhooks;
 using Azure.Data.Tables;
 using HtmlAgilityPack;
-
+using TenderBot_HiveIT;
 
 
 public class Details
@@ -43,22 +43,7 @@ public class Details
 
         }
 
-        public void SetDayRateOrBudget(HtmlNode htmlNode){
         
-                if (htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Budget')]/following-sibling::dd").InnerText == null){
-                    BudgetOrDayRate = false;
-                    Budget = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Maximum day')]/following-sibling::dd").InnerText;
-                }
-                else {
-                    Budget = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Budget')]/following-sibling::dd").InnerText;
-                    BudgetOrDayRate = true;
-                }
-
-                if (Regex.Matches(Budget,@"[a-zA-Z]").Count < 1)
-                {
-                    Budget = "Did not specify budget";
-                }                            
-        }
 
         public void SetValues(string title, string department, string publishedDate,string deadline,string? link,string description,string closing,string location){
             Title = title;

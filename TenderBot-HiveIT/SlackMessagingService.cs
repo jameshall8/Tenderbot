@@ -9,6 +9,10 @@ public class SlackMessagingService : IMessagingService
 
     public SlackClient GetSlackFavoriteClient()
     {
+        // var url = Environment.GetEnvironmentVariable("Webhook", EnvironmentVariableTarget.Process);
+        // //hive client
+        // var slackClient = new SlackClient(url);
+        
         //test webhook 
         var slackClient =
             new SlackClient("https://hooks.slack.com/services/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");
@@ -18,6 +22,11 @@ public class SlackMessagingService : IMessagingService
     
     public SlackClient GetSlackLeadTendersClient()
     {
+        // var url = Environment.GetEnvironmentVariable("Webhook", EnvironmentVariableTarget.Process);
+        // //hive client
+        // var slackClient = new SlackClient(url);
+
+        
         //test webhook 
         var slackClient =
             new SlackClient("https://hooks.slack.com/services/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");
@@ -51,10 +60,15 @@ public class SlackMessagingService : IMessagingService
         var slackAttachment = GetAttachment(details);
         message.Attachments = new List<SlackAttachment> { slackAttachment };
         slackClient.Post(message);
-
+        
         if (!favorite)
         {
             SendTrailMessage(details);
+        }
+        else
+        {
+            var tableservice = new TableStorageDatabaseService();
+            tableservice.StoreFavorites(details.Id, name);
         }
     }
     public void SendToTenderbotSlack(Details details, bool favorite)
@@ -116,7 +130,7 @@ public class SlackMessagingService : IMessagingService
     {
         var slackMessage = new SlackMessage
         {
-            Channel = "#leads-tenders",
+            Channel = "#tenderbot-test",
             Text = "New Tender Opportunity Posted",
             IconEmoji = Emoji.RobotFace,
             Username = "TenderBot",
@@ -128,7 +142,7 @@ public class SlackMessagingService : IMessagingService
     {
         var slackMessage = new SlackMessage
         {
-            Channel = "#leads-tenders",
+            Channel = "#tenderbot-test",
             Text = message,
             IconEmoji = Emoji.RobotFace,
             Username = "TenderBot",
@@ -140,7 +154,7 @@ public class SlackMessagingService : IMessagingService
     {
         var slackMessage = new SlackMessage
         {
-            Channel = "#tenderbot-favourites",
+            Channel = "#tenderbot-favorites",
             Text = "Tender Favorited by " + name,
             IconEmoji = Emoji.RobotFace,
             Username = "TenderBot",
@@ -152,12 +166,28 @@ public class SlackMessagingService : IMessagingService
     {
         var slackMessage = new SlackMessage
         {
-            Channel = "#leads-tenders",
+            Channel = "#tenderbot-test",
             Text = "Requested Info Posted Below",
             IconEmoji = Emoji.RobotFace,
             Username = "TenderBot",
         };
         return slackMessage;
+    }
+
+    public void PostAlreadyInFavoritesMessage(string username)
+    {
+        var message = new SlackMessage()
+        {
+            Channel = "#tenderbot-test",
+            Text = "Tender has already been posted in favorites by - " + username,
+            IconEmoji = Emoji.RobotFace,
+            Username = "TenderBot",
+        };
+
+        SlackClient client = GetSlackLeadTendersClient();
+
+        client.Post(message);
+
     }
 
 
@@ -266,6 +296,7 @@ public class SlackMessagingService : IMessagingService
     private List<Option> GetOptionForSelect(List<string> tags, string? iD)
     {
         List<Option> options = new List<Option>();
+        var counter = 0;
         foreach (String tag in tags)
         {
             
@@ -277,8 +308,9 @@ public class SlackMessagingService : IMessagingService
                     Text = tag,
                     Emoji = true
                 },
-                Value = iD
+                Value = "value-" + counter
             });
+            counter = counter + 1;
         }
 
         return options;
@@ -304,7 +336,7 @@ public class SlackMessagingService : IMessagingService
     {
         var slackAttachment = new SlackAttachment
         {
-            Text = "Info Requested Below",
+            
             Fallback = "Test",
             Color = "#0b0c0c",
             Fields =

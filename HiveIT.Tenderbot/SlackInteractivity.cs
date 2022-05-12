@@ -30,22 +30,29 @@ public static class SlackInteractivity
 
             if (text == "Send To Favourites")
             {
-                string username = payloadService.GetUsername(payload);
                 string id = payloadService.GetId(payload).Trim();
                 if (tableService.CheckIfNew(id) == false)
                 {
-                    url = tableService.GetUrlForMoreInfo(id);
-                    Details details = scrapingService.GetNewPageOverviewDetails(url);
-                    string name = payloadService.GetUsername(payload);
-                    messagingService.SendToTenderbotSlack(details, true, name);
+                    if (tableService.CheckIfInFavorites(id))
+                    {
+                        string userNameOfPersonWhoFavorited = tableService.GetUsernameFromFavorites(id);
 
+                        if (userNameOfPersonWhoFavorited != null) messagingService.PostAlreadyInFavoritesMessage(userNameOfPersonWhoFavorited);
+                    }
+                    else
+                    {
+                        url = tableService.GetUrlForMoreInfo(id);
+                        Details details = scrapingService.GetNewPageOverviewDetails(url);
+                        string name = payloadService.GetUsername(payload);
+                        messagingService.SendToTenderbotSlack(details, true, name);
+                    }
                 }
             }
             else if (text == "select")
             {
                 var selected = payloadService.GetSelected(payload);
                 string id = payloadService.GetSelectedId(payload);
-
+                
                 url = tableService.GetUrlForMoreInfo(id);
 
                 if (url != null) messagingService.PostSelectedDataToSlack(scrapingService, selected, url);

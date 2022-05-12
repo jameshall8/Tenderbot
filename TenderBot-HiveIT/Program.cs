@@ -33,7 +33,7 @@ namespace TenderBot_HiveIT
         void SendToTenderbotSlack(Details details, bool favorite);
         SlackAttachment GetAttachment(Details details);
     }
-    
+
     public class Program
     {
         static ScrapingBrowser _scrapingBrowser = new ScrapingBrowser();

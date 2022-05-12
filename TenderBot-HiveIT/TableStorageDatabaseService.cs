@@ -7,22 +7,16 @@ public class TableStorageDatabaseService : IDatabaseService
 {
     public bool CheckIfNew(string pageid)
     {
-        string testcs = "AccountName=hiveittenderbotstorage;AccountKey=MhwmuUUF17wEq7noDPOKz06SspZL5IQ8KG0KXzldMnavXPjZLVbOQGAwQbN8FgoWeacwjbOTcHKu+ddQ34YxGw==;BlobEndpoint=https://hiveittenderbotstorage.blob.core.windows.net/;QueueEndpoint=https://hiveittenderbotstorage.queue.core.windows.net/;TableEndpoint=https://hiveittenderbotstorage.table.core.windows.net/;FileEndpoint=https://hiveittenderbotstorage.file.core.windows.net/;";
-        //test cs
-        
-        // var cs = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
-        
-        // TableClient client = new TableClient(cs, "Tenders");
-        TableClient client = new TableClient(testcs, "tenderstest"); //test
+
+
+        TableClient client = GetTableClient(); //test
 
 
         Pageable<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{pageid}'");
 
         int counter = 0;
 
-            
-
-        foreach (TableEntity entity in entities)
+        foreach (TableEntity unused in entities)
         {
                 
             counter = counter + 1;
@@ -35,17 +29,61 @@ public class TableStorageDatabaseService : IDatabaseService
         return true;
     }
 
-    public void StoreDetails(Details details)
+    private TableClient GetTableClient()
     {
-        string testcs = "AccountName=hiveittenderbotstorage;AccountKey=MhwmuUUF17wEq7noDPOKz06SspZL5IQ8KG0KXzldMnavXPjZLVbOQGAwQbN8FgoWeacwjbOTcHKu+ddQ34YxGw==;BlobEndpoint=https://hiveittenderbotstorage.blob.core.windows.net/;QueueEndpoint=https://hiveittenderbotstorage.queue.core.windows.net/;TableEndpoint=https://hiveittenderbotstorage.table.core.windows.net/;FileEndpoint=https://hiveittenderbotstorage.file.core.windows.net/;";
-        //test cs
-        
-        // var cs = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
-
         // TableClient client = new TableClient(cs, "Tenders");
 
-        TableClient client = new TableClient(testcs, "tenderstest"); //test
+        TableClient client = new TableClient(GetConnectionStringFromAzure(), "tenderstest"); //test
 
+        return client;
+
+    }
+    
+    private TableClient GetFavoritesTableClient()
+    {
+        TableClient client = new TableClient(GetConnectionStringFromAzure(), "Tenders"); //test
+
+        return client;
+
+    }
+
+    private string? GetConnectionStringFromAzure()
+    {
+        string cs = "AccountName=hiveittenderbotstorage;AccountKey=MhwmuUUF17wEq7noDPOKz06SspZL5IQ8KG0KXzldMnavXPjZLVbOQGAwQbN8FgoWeacwjbOTcHKu+ddQ34YxGw==;BlobEndpoint=https://hiveittenderbotstorage.blob.core.windows.net/;QueueEndpoint=https://hiveittenderbotstorage.queue.core.windows.net/;TableEndpoint=https://hiveittenderbotstorage.table.core.windows.net/;FileEndpoint=https://hiveittenderbotstorage.file.core.windows.net/;";
+
+        // var cs = Environment.GetEnvironmentVariable("ConnectionString", EnvironmentVariableTarget.Process);
+
+        return cs;
+    }
+    
+    public bool CheckIfInFavorites(string id)
+    {
+        
+        
+        TableClient client = GetFavoritesTableClient();
+
+        Pageable<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{id}'");
+        
+        int counter = 0;
+
+        foreach (TableEntity unused in entities)
+        {
+                
+            counter = counter + 1;
+            if (counter > 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void StoreDetails(Details details)
+    {
+        
+        TableClient client = GetTableClient();
+        
         var entity = new TableEntity("Tenders", details.Id)
         {
             { "ID", details.Id },
@@ -60,22 +98,49 @@ public class TableStorageDatabaseService : IDatabaseService
         };
         client.AddEntity(entity);
     }
-
-    public string? GetUrlForMoreInfo(String ID)
+    
+    public void StoreFavorites(string id, string username)
     {
-        string testcs = "AccountName=hiveittenderbotstorage;AccountKey=MhwmuUUF17wEq7noDPOKz06SspZL5IQ8KG0KXzldMnavXPjZLVbOQGAwQbN8FgoWeacwjbOTcHKu+ddQ34YxGw==;BlobEndpoint=https://hiveittenderbotstorage.blob.core.windows.net/;QueueEndpoint=https://hiveittenderbotstorage.queue.core.windows.net/;TableEndpoint=https://hiveittenderbotstorage.table.core.windows.net/;FileEndpoint=https://hiveittenderbotstorage.file.core.windows.net/;";
-        
-        TableClient client = new TableClient(testcs, "tenderstest"); //test
+        TableClient client = GetFavoritesTableClient();
 
-        List<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{ID}'").ToList();
-        string? URL = "";
+        var entity = new TableEntity("Tenders", id)
+        {
+            { "ID", id },
+            { "Name", username }
+        };
+        client.AddEntity(entity);
+    }
+
+    public string? GetUrlForMoreInfo(String id)
+    {
+
+
+        TableClient client = GetTableClient(); //test
+
+        List<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{id}'").ToList();
+        string? url = "";
 
         foreach (var entity in entities)
         {
-            URL = entity["Link"].ToString();
+            url = entity["Link"].ToString();
+        }
+        return url;
+    }
+    
+    public string? GetUsernameFromFavorites(String id)
+    {
+        
+        TableClient client = GetFavoritesTableClient();
+
+        List<TableEntity> entities = client.Query<TableEntity>(filter: $"ID eq '{id}'").ToList();
+        string? username = "";
+
+        foreach (var entity in entities)
+        {
+            username = entity["Name"].ToString();
         }
 
-        return URL;
+        return username;
     }
     
 }

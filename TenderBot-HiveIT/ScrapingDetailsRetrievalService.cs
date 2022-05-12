@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+using System.Web;
 using HtmlAgilityPack;
 using ScrapySharp.Extensions;
 using ScrapySharp.Network;
@@ -8,7 +10,7 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
 {
     
     IDatabaseService databaseService;
-
+    
     public ScrapingDetailsRetrievalService(IDatabaseService databaseService)
     {
         this.databaseService = databaseService;
@@ -58,17 +60,19 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
                 if (databaseService.CheckIfNew(pageDetails.Id))
                 {
                         
-                        pageDetails.SetDayRateOrBudget(htmlNode);  
+
+                        pageDetails = SetDayRateOrBudget(pageDetails, htmlNode);
 
                         var title = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
                         var department = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
-                        var publishedDate = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
-                        var deadline = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
                         var link = "https://www.digitalmarketplace.service.gov.uk" + url;
-                        var description = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Summary')]/following-sibling::dd").InnerText;
-                        var closing = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Closing')]/following-sibling::dd").InnerText;
-                        var location = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
-
+                        var publishedDate = GetTextFromSite("Published", htmlNode);
+                        
+                        var deadline = GetTextFromSite("Deadline", htmlNode);
+                        var description = GetTextFromSite("Summary", htmlNode);
+                        var closing = GetTextFromSite("Closing", htmlNode);
+                        var location = GetTextFromSite("Location", htmlNode);
+                        
                         pageDetails.SetValues(title, department, publishedDate, deadline, link, description, closing, location);
 
                         databaseService.StoreDetails(pageDetails);
@@ -83,6 +87,17 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
             return listpageDetails;
 
         }
+
+        string GetTextFromSite(string neededData, HtmlNode htmlNode)
+        {
+            string text =  htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), '" + neededData + "')]/following-sibling::dd").InnerText;
+
+            text = Decode(text);
+
+            return text;
+            
+            
+        }
         
         public Details GetNewPageOverviewDetails(string? url)
         {
@@ -92,17 +107,18 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
                 var pageDetails = new Details();
                 pageDetails.Id = url.Substring(url.Length - 5);
                 
-                        
-                        pageDetails.SetDayRateOrBudget(htmlNode);  
+                        pageDetails = SetDayRateOrBudget(pageDetails, htmlNode);
 
                         var title = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//h1[@class='govuk-heading-l']").InnerText;
                         var department = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//span[@class='govuk-caption-l']").InnerText;
-                        var publishedDate = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Published')]/following-sibling::dd").InnerText;
-                        var deadline = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Deadline')]/following-sibling::dd").InnerText;
-                        var description = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Summary')]/following-sibling::dd").InnerText;
-                        var closing = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Closing')]/following-sibling::dd").InnerText;
-                        var location = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Location')]/following-sibling::dd").InnerText;
-
+                        var publishedDate = GetTextFromSite("Published", htmlNode);
+                        
+                        var deadline = GetTextFromSite("Deadline", htmlNode);
+                        var description = GetTextFromSite("Summary", htmlNode);
+                        var closing = GetTextFromSite("Closing", htmlNode);
+                        var location = GetTextFromSite("Location", htmlNode);
+                        
+                        
                         pageDetails.SetValues(title, department, publishedDate, deadline, url, description, closing, location);
                         
                 
@@ -133,48 +149,44 @@ public class ScrapingDetailsRetrievalService : IDetailsRetrievalService
         return list;
     }
 
-    public MoreDetails GetMoreInformationObject(string? url)
-    {
-        var htmlNode = GetHtml(url);
-        var moreDetails = new MoreDetails();
-
-        if (htmlNode.OwnerDocument.DocumentNode
-                .SelectSingleNode("//dt[contains(text(), 'Why the work is being done')]/following-sibling::dd")
-                .InnerText != null)
-        {
-            moreDetails.WhyTheWorkIsBeingDone = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Why the work is being done')]/following-sibling::dd").InnerText;
-
-        }
-
-        if (htmlNode.OwnerDocument.DocumentNode
-                .SelectSingleNode("//dt[contains(text(), 'Who the users are and what they need to do')]/following-sibling::dd")
-                .InnerText != null)
-        {
-            moreDetails.UsersAndWhatTheyNeedToDo = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Who the users are and what they need to do')]/following-sibling::dd").InnerText;
-
-        }
-        
-        if (htmlNode.OwnerDocument.DocumentNode
-                     .SelectSingleNode("//dt[contains(text(), 'Any work that’s already been done')]/following-sibling::dd")
-                     .InnerText != null)
-        {
-            moreDetails.WorkThatsAlreadyBeenDone = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Any work that’s already been done')]/following-sibling::dd").InnerText;
-        }
-
-        return moreDetails;
-
-    }
-
     public String GetSelectedData(string tag, string url)
     {
 
         var htmlNode = GetHtml(url);
 
         string text  = htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), '"+ tag + "')]/following-sibling::dd").InnerText;
-        
+
+        text = Decode(text);
         return text;
     }
     
+    public string Decode(String text)
+    {
+        string formattedString = HttpUtility.HtmlDecode(text);
+
+        return formattedString;
+    }
+
+    private Details SetDayRateOrBudget(Details pagedetails, HtmlNode htmlNode){
+        
+        if (htmlNode.OwnerDocument.DocumentNode.SelectSingleNode("//dt[contains(text(), 'Budget')]/following-sibling::dd").InnerText == null){
+            
+            pagedetails.BudgetOrDayRate = false;
+            pagedetails.Budget = GetTextFromSite("Maximum day", htmlNode);
+        }
+        else {
+            
+            pagedetails.Budget = GetTextFromSite("Budget", htmlNode);
+            pagedetails.BudgetOrDayRate = true;
+        }
+
+        if (Regex.Matches(pagedetails.Budget,@"[a-zA-Z]").Count < 1)
+        {
+            pagedetails.Budget = "Did not specify budget";
+        }
+
+        return pagedetails;
+    }
     
     
     
