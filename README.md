@@ -7,3 +7,5 @@ I was originally running the function application and table storage using azurit
 the HTTP trigger for the interactivity aspect of the app.
 
 This was an incredibly fun application to create, thanks to HiveIT for having me as an intern and allowing me to develop something they use day in day out!
+
+Looking back at this repo, makes me feel incredibly grateful as to how far my Git and programming knowledge has come from then until now!
