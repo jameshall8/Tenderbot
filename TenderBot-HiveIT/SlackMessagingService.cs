@@ -15,32 +15,20 @@ public class SlackMessagingService : IMessagingService
         
         //test webhook 
         var slackClient =
-            new SlackClient("https://hooks.slack.com/services/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");
-
+            new SlackClient(GetEnvironmentVariable("Webhook", EnvironmentVariableTarget.Process));
         return slackClient;
     }
     
     public SlackClient GetSlackLeadTendersClient()
     {
-        // var url = Environment.GetEnvironmentVariable("Webhook", EnvironmentVariableTarget.Process);
-        // //hive client
-        // var slackClient = new SlackClient(url);
-
-        
-        //test webhook 
         var slackClient =
-            new SlackClient("https://hooks.slack.com/services/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");
+            new SlackClient(GetEnvironmentVariable("Webhook", EnvironmentVariableTarget.Process));
 
         return slackClient;
     }
 
     public void SendToTenderbotSlack(Details details, bool favorite, string name)
     {
-        //hive webhook 
-
-        // var slackClient = new SlackClient("https://hooks.slack.com/services/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");
-
-        //test webhook 
 
         SlackMessage message;
         SlackClient slackClient;
@@ -73,12 +61,6 @@ public class SlackMessagingService : IMessagingService
     }
     public void SendToTenderbotSlack(Details details, bool favorite)
     {
-        //hive webhook 
-
-        // var slackClient = new SlackClient("https://hooks.slack.com/services/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");
-
-        //test webhook 
-
         SlackMessage message;
         SlackClient slackClient;
         if (favorite)

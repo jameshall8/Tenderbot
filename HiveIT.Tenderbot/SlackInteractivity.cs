@@ -68,8 +68,4 @@ public static class SlackInteractivity
         }
 
     }
-
-
-
-
 }
